@@ -1,6 +1,7 @@
 package com.tzsombi.webshop.auth;
 
 
+import com.tzsombi.webshop.constanst.Constants;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
 import com.tzsombi.webshop.repositories.UserRepository;
@@ -47,7 +48,7 @@ public class AuthenticationService {
                 )
         );
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email " + request.getEmail()));
+                .orElseThrow(() -> new UsernameNotFoundException(Constants.USER_NOT_FOUND_MSG));
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)

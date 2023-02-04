@@ -1,6 +1,6 @@
 package com.tzsombi.webshop.controllers;
 
-import com.tzsombi.webshop.constanst.Constants;
+import com.tzsombi.webshop.constants.Constants;
 import com.tzsombi.webshop.models.UserRequestDTO;
 import com.tzsombi.webshop.models.UserResponseDTO;
 import com.tzsombi.webshop.services.UserService;

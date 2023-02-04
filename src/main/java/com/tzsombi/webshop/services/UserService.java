@@ -1,12 +1,13 @@
 package com.tzsombi.webshop.services;
 
-import com.tzsombi.webshop.constanst.Constants;
+import com.tzsombi.webshop.constants.Constants;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.User;
 import com.tzsombi.webshop.models.UserRequestDTO;
 import com.tzsombi.webshop.models.UserResponseDTO;
 import com.tzsombi.webshop.repositories.UserRepository;
+import com.tzsombi.webshop.utils.CredentialChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,9 +50,9 @@ public class UserService {
 
         if (email != null && email.length() > 0) {
             email = email.toLowerCase();
-            if (userRepository.existsByEmail(email)) {
-                throw new IllegalArgumentException(Constants.EMAIL_ALREADY_EXISTS_MSG);
-            }
+
+            CredentialChecker.ifUserPresentWithEmailThrowAuthException(email, userRepository);
+
             Pattern pattern = Pattern.compile("^(.+)@(.+)$");
             if(!pattern.matcher(email).matches()) {
                 throw new AuthException(Constants.INVALID_EMAIL_FORMAT_MSG);

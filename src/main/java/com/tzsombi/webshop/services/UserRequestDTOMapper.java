@@ -1,21 +1,21 @@
 package com.tzsombi.webshop.services;
 
 import com.tzsombi.webshop.models.User;
-import com.tzsombi.webshop.models.UserResponseDTO;
+import com.tzsombi.webshop.models.UserRequestDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
 @Service
-public class UserRequestDTOMapper implements Function<User, UserResponseDTO> {
+public class UserRequestDTOMapper implements Function<User, UserRequestDTO> {
 
     @Override
-    public UserResponseDTO apply(User user) {
-        return new UserResponseDTO(
+    public UserRequestDTO apply(User user) {
+        return new UserRequestDTO(
                 user.getFirstName(),
                 user.getLastname(),
                 user.getEmail(),
-                user.getRole()
+                user.getPassword()
         );
     }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -34,8 +33,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private BigDecimal price;
 
     @ManyToMany
@@ -54,7 +55,7 @@ public class Product {
             }
     )
     @ToString.Exclude
-    Set<User> users = new HashSet<>();
+    Set<User> buyers = new HashSet<>();
 
     public Product(String name, BigDecimal price) {
         this.name = name;

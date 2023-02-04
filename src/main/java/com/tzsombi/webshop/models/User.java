@@ -36,6 +36,14 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @OneToMany(
+            targetEntity = Product.class,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "seller_id", referencedColumnName = "id")
+    @ToString.Exclude
+    private List<Product> sellingProducts;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -60,9 +68,7 @@ public class User implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
     public boolean isCredentialsNonExpired() {
@@ -72,5 +78,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addSellingProduct(Product product) {
+        sellingProducts.add(product);
+    }
+
+    public void deleteSellingProduct(Product product) {
+        sellingProducts.remove(product);
     }
 }

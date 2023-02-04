@@ -27,7 +27,7 @@ public class UserService {
 
     public UserResponseDTO getUserById(Long userId) {
         return userRepository.findById(userId)
-                .map(userRequestDTOMapper)
+                .map(userResponseDTOMapper)
                 .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
     }
 

@@ -1,12 +1,15 @@
 package com.tzsombi.webshop.controllers;
 
 import com.tzsombi.webshop.models.Product;
+import com.tzsombi.webshop.models.ProductResponseDTO;
 import com.tzsombi.webshop.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,11 +29,12 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/add/{sellerId}")
     public ResponseEntity<String> addProduct(
+            @PathVariable Long sellerId,
             @RequestBody String rawProduct
     ) {
-        productService.addProduct(rawProduct);
+        productService.addProduct(rawProduct, sellerId);
         return new ResponseEntity<>("Product added successfully!", HttpStatus.CREATED);
     }
 }

@@ -16,15 +16,15 @@ import java.math.BigDecimal;
 @JsonTypeName("phone")
 public class Computer extends Product {
 
-    private GpuType gpu;
-
-    private CpuType cpu;
-
     private Integer ramInGb;
 
     private String manufacturer;
 
     private Color color;
+
+    private GpuType gpu;
+
+    private CpuType cpu;
 
     public Computer(String name, BigDecimal price, GpuType gpu, CpuType cpu, Integer ramInGb,
                     String manufacturer, Color color) {

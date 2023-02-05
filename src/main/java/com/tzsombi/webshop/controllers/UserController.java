@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.controllers;
 
+import com.tzsombi.webshop.auth.AuthenticationResponse;
 import com.tzsombi.webshop.constants.Constants;
 import com.tzsombi.webshop.models.UserRequestDTO;
 import com.tzsombi.webshop.models.UserResponseDTO;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +28,8 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<Map<String, UserResponseDTO>> updateUser(
-            @PathVariable Long userId,
-            @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO updatedUser = userService.updateUserById(userId, userRequestDTO);
-        Map<String, UserResponseDTO> response = new HashMap<>();
-        response.put(Constants.USER_UPDATED_MSG, updatedUser);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public AuthenticationResponse updateUser(@PathVariable Long userId, @RequestBody UserRequestDTO userRequestDTO) {
+        return userService.updateUserById(userId, userRequestDTO);
     }
 
     @DeleteMapping("/delete/{userId}")

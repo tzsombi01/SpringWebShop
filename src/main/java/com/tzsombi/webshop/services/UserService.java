@@ -1,5 +1,7 @@
 package com.tzsombi.webshop.services;
 
+import com.tzsombi.webshop.auth.AuthenticationResponse;
+import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.constants.Constants;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
@@ -20,10 +22,12 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserRequestDTOMapper userRequestDTOMapper;
+
     private final UserResponseDTOMapper userResponseDTOMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtService jwtService;
 
     public UserResponseDTO getUserById(Long userId) {
         return userRepository.findById(userId)
@@ -31,7 +35,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
     }
 
-    public UserResponseDTO updateUserById(Long userId, UserRequestDTO userRequestDTO) {
+    public AuthenticationResponse updateUserById(Long userId, UserRequestDTO userRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
 
@@ -65,7 +69,11 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return userResponseDTOMapper.apply(user);
+
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
     public void deleteUserById(Long userId) {

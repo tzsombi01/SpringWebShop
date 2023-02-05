@@ -14,7 +14,8 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Entity(name = "products")
+@Entity
+@Table(name = "products")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "product_type")
 @JsonTypeInfo(

@@ -1,6 +1,8 @@
 package com.tzsombi.webshop.services;
 
 import com.tzsombi.webshop.constants.Constants;
+import com.tzsombi.webshop.exceptions.AuthException;
+import com.tzsombi.webshop.exceptions.ProductNotFoundException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.Product;
 import com.tzsombi.webshop.models.User;
@@ -26,15 +28,34 @@ public class ProductService {
     }
 
     public void addProduct(String rawProduct, Long sellerId) {
-        Product product = ProductFactory.makeProduct(rawProduct);
-
-        productRepository.save(product);
-
         User user = userRepository.findById(sellerId)
                 .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
 
+        Product product = ProductFactory.makeProduct(rawProduct);
+
+        if(product.getSellerId() == null) {
+            product.setSellerId(sellerId);
+        }
+
         user.addSellingProduct(product);
 
+        productRepository.save(product);
+        userRepository.save(user);
+    }
+
+    public void deleteProduct(Long productId, Long sellerId) {
+        User user = userRepository.findById(sellerId)
+                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND));
+
+        if (user.getSellingProducts().stream().noneMatch(prod -> prod.getId().equals(productId))) {
+            throw new AuthException(Constants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
+        }
+
+        user.deleteSellingProduct(product);
+        productRepository.delete(product);
         userRepository.save(user);
     }
 }

@@ -13,7 +13,6 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "products")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -40,6 +39,9 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(name = "seller_id")
+    private Long sellerId;
+
     @ManyToMany
     @JoinTable(
             name = "user_product",
@@ -58,8 +60,9 @@ public class Product {
     @ToString.Exclude
     Set<User> buyers = new HashSet<>();
 
-    public Product(String name, BigDecimal price) {
+    public Product(String name, BigDecimal price, Long sellerId) {
         this.name = name;
         this.price = price;
+        this.sellerId = sellerId;
     }
 }

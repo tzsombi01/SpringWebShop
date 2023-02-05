@@ -19,7 +19,7 @@ public class ProductFactory {
             Product product = mapper.readValue(rawProduct, Product.class);
             return product;
         } catch (JsonProcessingException e) {
-            throw new ProductBadRequestException(Constants.PRODUCT_CANNOT_BE_CREATED);
+            throw new ProductBadRequestException(Constants.PRODUCT_CANNOT_BE_CREATED_MSG);
         }
     }
 }

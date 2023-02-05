@@ -31,12 +31,12 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         String firstName = request.getFirstName();
         if(firstName == null || firstName.length() == 0) {
-            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG);
+            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
         }
 
         String lastName = request.getLastName();
         if(lastName == null || lastName.length() == 0) {
-            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG);
+            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
         }
 
         String email = request.getEmail();

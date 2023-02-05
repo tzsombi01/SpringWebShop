@@ -26,9 +26,9 @@ public class Computer extends Product {
 
     private CpuType cpu;
 
-    public Computer(String name, BigDecimal price, GpuType gpu, CpuType cpu, Integer ramInGb,
+    public Computer(String name, BigDecimal price, Long sellerId, GpuType gpu, CpuType cpu, Integer ramInGb,
                     String manufacturer, Color color) {
-        super(name, price);
+        super(name, price, sellerId);
         this.gpu = gpu;
         this.cpu = cpu;
         this.ramInGb = ramInGb;

@@ -12,4 +12,5 @@ public class Constants {
             "You do not have permission to modify this product!";
     public static final String PRODUCT_NOT_FOUND_MSG = "Product not found!";
     public static final String PRODUCT_NOT_UPDATABLE_MSG = "Product is not updatable!";
+    public static final String CANNOT_BUY_YOUR_OWN_PRODUCT_MSG = "You can not buy your own product!";
 }

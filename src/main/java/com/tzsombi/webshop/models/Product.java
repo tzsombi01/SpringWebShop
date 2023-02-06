@@ -65,4 +65,12 @@ public abstract class Product {
         this.price = price;
         this.sellerId = sellerId;
     }
+
+    public void addBuyer(User user) {
+        buyers.add(user);
+    }
+
+    public void deleteBuyer(User user) {
+        buyers.remove(user);
+    }
 }

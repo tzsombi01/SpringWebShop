@@ -8,6 +8,7 @@ import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.*;
 import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
+import com.tzsombi.webshop.utils.CredentialChecker;
 import com.tzsombi.webshop.utils.ProductFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -143,5 +144,19 @@ public class ProductService {
         user.deleteSellingProduct(product);
         productRepository.delete(product);
         userRepository.save(user);
+    }
+
+    public void buyProduct(Long productId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND_MSG));
+
+        CredentialChecker.ifSellerAndBuyerIsTheSameThrowException(product, user);
+
+        product.addBuyer(user);
+
+        productRepository.save(product);
     }
 }

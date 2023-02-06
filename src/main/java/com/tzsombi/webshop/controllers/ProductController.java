@@ -49,4 +49,10 @@ public class ProductController {
         productService.deleteProduct(productId, sellerId);
         return new ResponseEntity<>("Product deleted successfully!", HttpStatus.OK);
     }
+
+    @PostMapping("/buy/{productId}")
+    public ResponseEntity<String> buyProduct(@PathVariable Long productId, @RequestParam Long userId) {
+        productService.buyProduct(productId, userId);
+        return new ResponseEntity<>("Purchase was successful!", HttpStatus.ACCEPTED);
+    }
 }

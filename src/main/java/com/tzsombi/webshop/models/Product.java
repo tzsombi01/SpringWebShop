@@ -23,11 +23,11 @@ import java.util.Set;
 )
 @JsonSubTypes(
         {
-                @JsonSubTypes.Type(value = Phone.class, name = "phone"),
-                @JsonSubTypes.Type(value = Computer.class, name = "computer")
+                @JsonSubTypes.Type(value = Phone.class, name = "Phone"),
+                @JsonSubTypes.Type(value = Computer.class, name = "Computer")
         }
 )
-public class Product {
+public abstract class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

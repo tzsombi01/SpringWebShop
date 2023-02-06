@@ -1,6 +1,7 @@
 package com.tzsombi.webshop.controllers;
 
 import com.tzsombi.webshop.models.Product;
+import com.tzsombi.webshop.models.ProductRequestDTO;
 import com.tzsombi.webshop.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,14 @@ public class ProductController {
     ) {
         productService.addProduct(rawProduct, sellerId);
         return new ResponseEntity<>("Product added successfully!", HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/{productId}")
+    public ResponseEntity<String> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductRequestDTO productRequestDTO) {
+        productService.updateProduct(productId, productRequestDTO);
+        return new ResponseEntity<>("Product updated successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{sellerId}")

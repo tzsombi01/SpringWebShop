@@ -13,7 +13,7 @@ public class UserRequestDTOMapper implements Function<User, UserRequestDTO> {
     public UserRequestDTO apply(User user) {
         return new UserRequestDTO(
                 user.getFirstName(),
-                user.getLastname(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getPassword()
         );

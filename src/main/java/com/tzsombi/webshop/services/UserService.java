@@ -48,8 +48,8 @@ public class UserService {
             user.setFirstName(firstName);
         }
 
-        if (lastName != null && lastName.length() > 0 && !user.getLastname().equals(lastName)) {
-            user.setLastname(lastName);
+        if (lastName != null && lastName.length() > 0 && !user.getLastName().equals(lastName)) {
+            user.setLastName(lastName);
         }
 
         if (email != null && email.length() > 0) {

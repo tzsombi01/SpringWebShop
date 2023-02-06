@@ -10,5 +10,6 @@ public class Constants {
             "Product cannot be created, enter valid data!";
     public static final String NO_PERMISSION_TO_MODIFY_PRODUCT_MSG =
             "You do not have permission to modify this product!";
-    public static final String PRODUCT_NOT_FOUND = "Product not found!";
+    public static final String PRODUCT_NOT_FOUND_MSG = "Product not found!";
+    public static final String PRODUCT_NOT_UPDATABLE_MSG = "Product is not updatable!";
 }

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity(name = "Computer")
 @DiscriminatorValue("Computer")
-@JsonTypeName("phone")
+@JsonTypeName("Computer")
 public class Computer extends Product {
 
     private Integer ramInGb;

@@ -13,16 +13,16 @@ import java.math.BigDecimal;
 @ToString
 @Entity(name = "Phone")
 @DiscriminatorValue("Phone")
-@JsonTypeName("phone")
+@JsonTypeName("Phone")
 public class Phone extends Product {
 
     private Integer ramInGb;
 
     private String manufacturer;
 
-    private PhoneOperatingSystem system;
-
     private Color color;
+
+    private PhoneOperatingSystem system;
 
     public Phone(String name, BigDecimal price, Long sellerId, Integer ramInGb, String manufacturer,
                  PhoneOperatingSystem system, Color color) {

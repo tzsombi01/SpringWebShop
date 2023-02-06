@@ -14,7 +14,7 @@ public class UserResponseDTOMapper implements Function<User, UserResponseDTO> {
     public UserResponseDTO apply(User user) {
         return new UserResponseDTO(
                 user.getFirstName(),
-                user.getLastname(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getSellingProducts(),
                 user.getRole()

@@ -44,6 +44,14 @@ public class User implements UserDetails {
     @ToString.Exclude
     private List<Product> sellingProducts;
 
+    @OneToMany(
+            targetEntity = CreditCard.class,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ToString.Exclude
+    private List<CreditCard> cards;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -52,23 +52,26 @@ public class ProductService {
 
         String type = productRepository.findProductTypeById(productId);
 
-        Product updatedProduct;
-        if (type.equals("Phone")) {
-            updatedProduct = updatePhone((Phone) product, productRequestDTO);
-        }
-        else if (type.equals("Computer")) {
-            updatedProduct = updateComputer((Computer) product, productRequestDTO);
-        }
-        else {
-            throw new ProductNotUpdatableException(Constants.PRODUCT_NOT_UPDATABLE_MSG);
-        }
+        Product updatedProduct = selectAndUpdateSpecificProduct(product, type, productRequestDTO);
 
         productRepository.save(updatedProduct);
+    }
+
+    private Product selectAndUpdateSpecificProduct(Product product, String type, ProductRequestDTO productRequestDTO) {
+        if (type.equals("Phone")) {
+            return updatePhone((Phone) product, productRequestDTO);
+        }
+        else if (type.equals("Computer")) {
+            return updateComputer((Computer) product, productRequestDTO);
+        }
+
+        throw new ProductNotUpdatableException(Constants.PRODUCT_NOT_UPDATABLE_MSG);
     }
 
     private Phone updatePhone(Phone phone, ProductRequestDTO productRequestDTO) {
         String name = productRequestDTO.name();
         BigDecimal price = productRequestDTO.price();
+        String description = productRequestDTO.description();
         Integer ramInGb = productRequestDTO.ramInGb();
         String manufacturer = productRequestDTO.manufacturer();
         Color color = productRequestDTO.color();
@@ -79,6 +82,9 @@ public class ProductService {
         }
         if (price != null && ! phone.getPrice().equals(price)) {
             phone.setPrice(price);
+        }
+        if (description != null && ! phone.getDescription().equals(description)) {
+            phone.setDescription(description);
         }
         if (ramInGb != null && ramInGb > 0 && ! phone.getRamInGb().equals(ramInGb)) {
             phone.setRamInGb(ramInGb);
@@ -99,9 +105,11 @@ public class ProductService {
     private Computer updateComputer(Computer computer, ProductRequestDTO productRequestDTO) {
         String name = productRequestDTO.name();
         BigDecimal price = productRequestDTO.price();
+        String description = productRequestDTO.description();
         Integer ramInGb = productRequestDTO.ramInGb();
         String manufacturer = productRequestDTO.manufacturer();
         Color color = productRequestDTO.color();
+        ComputerOperatingSystem computerOperatingSystem = productRequestDTO.computerOperatingSystem();
         GpuType gpu = productRequestDTO.gpu();
         CpuType cpu = productRequestDTO.cpu();
 
@@ -111,6 +119,9 @@ public class ProductService {
         if (price != null && ! computer.getPrice().equals(price)) {
             computer.setPrice(price);
         }
+        if (description != null && ! computer.getDescription().equals(description)) {
+            computer.setDescription(description);
+        }
         if (ramInGb != null && ramInGb > 0 && ! computer.getRamInGb().equals(ramInGb)) {
             computer.setRamInGb(ramInGb);
         }
@@ -119,6 +130,9 @@ public class ProductService {
         }
         if (color != null && ! computer.getColor().equals(color)) {
             computer.setColor(color);
+        }
+        if (computerOperatingSystem != null && ! computer.getSystem().equals(computerOperatingSystem)) {
+            computer.setSystem(computerOperatingSystem);
         }
         if (gpu != null && ! computer.getGpu().equals(gpu)) {
             computer.setGpu(gpu);

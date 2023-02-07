@@ -15,6 +15,7 @@ public class ProductResponseDTOMapper implements BiFunction<Product, User, Produ
         return new ProductResponseDTO(
                 product.getName(),
                 product.getPrice(),
+                product.getDescription(),
                 user.getEmail()
         );
     }

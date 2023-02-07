@@ -24,9 +24,9 @@ public class Phone extends Product {
 
     private PhoneOperatingSystem system;
 
-    public Phone(String name, BigDecimal price, Long sellerId, Integer ramInGb, String manufacturer,
+    public Phone(String name, BigDecimal price, String description, Long sellerId, Integer ramInGb, String manufacturer,
                  PhoneOperatingSystem system, Color color) {
-        super(name, price, sellerId);
+        super(name, price, description, sellerId);
         this.ramInGb = ramInGb;
         this.manufacturer = manufacturer;
         this.system = system;

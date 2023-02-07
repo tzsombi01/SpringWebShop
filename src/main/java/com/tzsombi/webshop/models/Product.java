@@ -39,6 +39,8 @@ public abstract class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    private String description;
+
     @Column(name = "seller_id")
     private Long sellerId;
 
@@ -60,9 +62,10 @@ public abstract class Product {
     @ToString.Exclude
     Set<User> buyers = new HashSet<>();
 
-    public Product(String name, BigDecimal price, Long sellerId) {
+    public Product(String name, BigDecimal price, String description, Long sellerId) {
         this.name = name;
         this.price = price;
+        this.description = description;
         this.sellerId = sellerId;
     }
 

@@ -22,17 +22,19 @@ public class Computer extends Product {
 
     private Color color;
 
+    private ComputerOperatingSystem system;
     private GpuType gpu;
 
     private CpuType cpu;
 
-    public Computer(String name, BigDecimal price, Long sellerId, GpuType gpu, CpuType cpu, Integer ramInGb,
-                    String manufacturer, Color color) {
-        super(name, price, sellerId);
+    public Computer(String name, BigDecimal price, String description,  Long sellerId, GpuType gpu, CpuType cpu, Integer ramInGb,
+                    String manufacturer, Color color, ComputerOperatingSystem system) {
+        super(name, price, description, sellerId);
         this.gpu = gpu;
         this.cpu = cpu;
         this.ramInGb = ramInGb;
         this.manufacturer = manufacturer;
         this.color = color;
+        this.system = system;
     }
 }

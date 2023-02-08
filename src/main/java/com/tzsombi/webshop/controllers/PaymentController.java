@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/payment")
+@RequestMapping("/api/v1/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -27,9 +27,17 @@ public class PaymentController {
         return new ResponseEntity<>("Card registered successfully!", HttpStatus.ACCEPTED);
     }
 
+    @PutMapping("update/{cardId}")
+    public ResponseEntity<String> updateCard(@PathVariable Long cardId,
+                                             @RequestParam Long userId,
+                                             @RequestBody CreditCardRequestDTO cardRequestDTO) {
+        paymentService.updateCard(cardRequestDTO, cardId, userId);
+        return new ResponseEntity<>("Card updated successfully!", HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{cardId}")
     public ResponseEntity<String> deleteCard(@PathVariable Long cardId, @RequestParam Long userId) {
         paymentService.deleteCard(cardId, userId);
-        return new ResponseEntity<>("Card deleted successfully!", HttpStatus.OK);
+        return new ResponseEntity<>("Card was deleted successfully!", HttpStatus.OK);
     }
 }

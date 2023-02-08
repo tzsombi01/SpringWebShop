@@ -95,4 +95,12 @@ public class User implements UserDetails {
     public void deleteSellingProduct(Product product) {
         sellingProducts.remove(product);
     }
+
+    public void addCard(CreditCard card) {
+        cards.add(card);
+    }
+
+    public void deleteCard(CreditCard card) {
+        cards.remove(card);
+    }
 }

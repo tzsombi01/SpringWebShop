@@ -1,7 +1,7 @@
 package com.tzsombi.webshop.auth;
 
 
-import com.tzsombi.webshop.constants.Constants;
+import com.tzsombi.webshop.constants.ErrorConstants;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
@@ -31,12 +31,12 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         String firstName = request.getFirstName();
         if(firstName == null || firstName.length() == 0) {
-            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
+            throw new IllegalArgumentException(ErrorConstants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
         }
 
         String lastName = request.getLastName();
         if(lastName == null || lastName.length() == 0) {
-            throw new IllegalArgumentException(Constants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
+            throw new IllegalArgumentException(ErrorConstants.NAMES_MUST_BE_AT_LEAST_1_CHAR_LONG_MSG);
         }
 
         String email = request.getEmail();
@@ -45,7 +45,7 @@ public class AuthenticationService {
 
             Pattern pattern = Pattern.compile("^(.+)@(.+)$");
             if(!pattern.matcher(email).matches()) {
-                throw new AuthException(Constants.INVALID_EMAIL_FORMAT_MSG);
+                throw new AuthException(ErrorConstants.INVALID_EMAIL_FORMAT_MSG);
             }
 
             CredentialChecker.ifUserPresentWithEmailThrowAuthException(email, userRepository);
@@ -75,7 +75,7 @@ public class AuthenticationService {
 
             Pattern pattern = Pattern.compile("^(.+)@(.+)$");
             if(!pattern.matcher(email).matches()) {
-                throw new AuthException(Constants.INVALID_EMAIL_FORMAT_MSG);
+                throw new AuthException(ErrorConstants.INVALID_EMAIL_FORMAT_MSG);
             }
         }
 
@@ -86,7 +86,7 @@ public class AuthenticationService {
                 )
         );
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

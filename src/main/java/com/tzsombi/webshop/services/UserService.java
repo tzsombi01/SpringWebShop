@@ -2,7 +2,7 @@ package com.tzsombi.webshop.services;
 
 import com.tzsombi.webshop.auth.AuthenticationResponse;
 import com.tzsombi.webshop.auth.JwtService;
-import com.tzsombi.webshop.constants.Constants;
+import com.tzsombi.webshop.constants.ErrorConstants;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.User;
@@ -32,12 +32,12 @@ public class UserService {
     public UserResponseDTO getUserById(Long userId) {
         return userRepository.findById(userId)
                 .map(userResponseDTOMapper)
-                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
     }
 
     public AuthenticationResponse updateUserById(Long userId, UserRequestDTO userRequestDTO) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
         String firstName = userRequestDTO.firstName();
         String lastName = userRequestDTO.lastName();
@@ -59,7 +59,7 @@ public class UserService {
 
             Pattern pattern = Pattern.compile("^(.+)@(.+)$");
             if(!pattern.matcher(email).matches()) {
-                throw new AuthException(Constants.INVALID_EMAIL_FORMAT_MSG);
+                throw new AuthException(ErrorConstants.INVALID_EMAIL_FORMAT_MSG);
             }
             user.setEmail(email);
         }

@@ -1,11 +1,9 @@
 package com.tzsombi.webshop.services;
 
-import com.tzsombi.webshop.constants.Constants;
-import com.tzsombi.webshop.exceptions.AuthException;
-import com.tzsombi.webshop.exceptions.ProductNotFoundException;
-import com.tzsombi.webshop.exceptions.ProductNotUpdatableException;
-import com.tzsombi.webshop.exceptions.UserNotFoundException;
+import com.tzsombi.webshop.constants.ErrorConstants;
+import com.tzsombi.webshop.exceptions.*;
 import com.tzsombi.webshop.models.*;
+import com.tzsombi.webshop.repositories.PaymentRepository;
 import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.utils.CredentialChecker;
@@ -24,6 +22,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     public Page<Product> getAllProducts(Integer page, Integer numberOfProducts, String sortBy, Boolean isOrderAsc) {
         return productRepository.findAll(
@@ -32,13 +31,9 @@ public class ProductService {
 
     public void addProduct(String rawProduct, Long sellerId) {
         User user = userRepository.findById(sellerId)
-                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
         Product product = ProductFactory.makeProduct(rawProduct);
-
-        if (product.getSellerId() == null) {
-            product.setSellerId(sellerId);
-        }
 
         user.addSellingProduct(product);
 
@@ -48,7 +43,7 @@ public class ProductService {
 
     public void updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
 
         String type = productRepository.findProductTypeById(productId);
 
@@ -65,7 +60,7 @@ public class ProductService {
             return updateComputer((Computer) product, productRequestDTO);
         }
 
-        throw new ProductNotUpdatableException(Constants.PRODUCT_NOT_UPDATABLE_MSG);
+        throw new ProductNotUpdatableException(ErrorConstants.PRODUCT_NOT_UPDATABLE_MSG);
     }
 
     private Phone updatePhone(Phone phone, ProductRequestDTO productRequestDTO) {
@@ -146,31 +141,42 @@ public class ProductService {
 
     public void deleteProduct(Long productId, Long sellerId) {
         User user = userRepository.findById(sellerId)
-                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
 
         if (user.getSellingProducts().stream().noneMatch(prod -> prod.getId().equals(productId))) {
-            throw new AuthException(Constants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
+            throw new AuthException(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
         }
 
         user.deleteSellingProduct(product);
+
         productRepository.delete(product);
         userRepository.save(user);
     }
 
     public void buyProduct(Long productId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(Constants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
 
         CredentialChecker.ifSellerAndBuyerIsTheSameThrowException(product, user);
+
+        CreditCard creditCard = paymentRepository.findActiveCardUnderUserById(userId)
+                .orElseThrow(() -> new NoActiveCardFoundException(ErrorConstants.SET_AN_ACTIVE_CARD_MSG));
+
+        payWithCreditCardIfFailsThrowException(creditCard);
 
         product.addBuyer(user);
 
         productRepository.save(product);
+    }
+
+    // TODO
+    private void payWithCreditCardIfFailsThrowException(CreditCard creditCard) {
+        return;
     }
 }

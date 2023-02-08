@@ -27,6 +27,9 @@ public class CreditCard {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
     @Column(name = "user_id")
     private Long userId;
 }

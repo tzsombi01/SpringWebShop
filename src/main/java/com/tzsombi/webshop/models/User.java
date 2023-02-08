@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,15 +43,15 @@ public class User implements UserDetails {
     )
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     @ToString.Exclude
-    private List<Product> sellingProducts;
+    private List<Product> sellingProducts = new ArrayList<>();
 
     @OneToMany(
             targetEntity = CreditCard.class,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ToString.Exclude
-    private List<CreditCard> cards;
+    private List<CreditCard> cards = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -77,6 +77,9 @@ public class UserService {
     }
 
     public void deleteUserById(Long userId) {
+        if (! userRepository.existsById(userId)) {
+            throw new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG);
+        }
         userRepository.deleteById(userId);
     }
 }

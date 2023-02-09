@@ -8,7 +8,7 @@ import java.time.YearMonth;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "credit_cards")
 public class CreditCard {
@@ -32,4 +32,13 @@ public class CreditCard {
 
     @Column(name = "user_id")
     private Long userId;
+
+
+    public CreditCard(String cardNumber, YearMonth expiryDate, String fullName, Boolean isActive, Long userId) {
+        this.cardNumber = cardNumber;
+        this.expiryDate = expiryDate;
+        this.fullName = fullName;
+        this.isActive = isActive;
+        this.userId = userId;
+    }
 }

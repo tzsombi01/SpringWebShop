@@ -22,7 +22,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaymentRepository payMentRepository;
+    private final PaymentRepository paymentRepository;
 
     private final CreditCardResponseDTOMapper creditCardResponseDTOMapper;
 
@@ -34,7 +34,7 @@ public class PaymentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
-        CreditCard creditCard = payMentRepository.findById(cardId)
+        CreditCard creditCard = paymentRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));
 
         CredentialChecker.ifUserHasTheCardProceedOrElseException(user, creditCard);
@@ -48,25 +48,26 @@ public class PaymentService {
 
         CreditCard creditCard = CreditCardFactory.makeCard(cardRequest);
 
-        CreditCardValidator.validate(creditCard);
+        CreditCardValidator.validate(creditCard, clock);
 
         if (creditCard.getIsActive() && user.getCards().stream().anyMatch(CreditCard::getIsActive)) {
-            CreditCard previouslyActiveCard = payMentRepository.findActiveCardUnderUserById(userId)
+            CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
                     .orElseThrow(() ->
                             new StateMisMatchException(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG));
 
             previouslyActiveCard.setIsActive(false);
-            payMentRepository.save(previouslyActiveCard);
+            paymentRepository.save(previouslyActiveCard);
         }
+        creditCard.setUserId(userId);
 
-        payMentRepository.save(creditCard);
+        paymentRepository.save(creditCard);
     }
 
     public void updateCard(CreditCardRequestDTO cardRequest, Long cardId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
-        CreditCard creditCard = payMentRepository.findById(cardId)
+        CreditCard creditCard = paymentRepository.findById(cardId)
                         .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));
 
         CredentialChecker.ifUserHasTheCardProceedOrElseException(user, creditCard);
@@ -84,12 +85,12 @@ public class PaymentService {
         }
         if (isActive != null && ! creditCard.getIsActive().equals(isActive)) {
             if (isActive) {
-                CreditCard previouslyActiveCard = payMentRepository.findActiveCardUnderUserById(userId)
+                CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
                         .orElseThrow(() ->
                                 new StateMisMatchException(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG));
 
                 previouslyActiveCard.setIsActive(false);
-                payMentRepository.save(previouslyActiveCard);
+                paymentRepository.save(previouslyActiveCard);
             }
             creditCard.setIsActive(isActive);
         }
@@ -97,20 +98,20 @@ public class PaymentService {
             creditCard.setFullName(fullName);
         }
 
-        CreditCardValidator.validate(creditCard);
+        CreditCardValidator.validate(creditCard, clock);
 
-        payMentRepository.save(creditCard);
+        paymentRepository.save(creditCard);
     }
 
     public void deleteCard(Long cardId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
 
-        CreditCard creditCard = payMentRepository.findById(cardId)
+        CreditCard creditCard = paymentRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));
 
         CredentialChecker.ifUserHasTheCardProceedOrElseException(user, creditCard);
 
-        payMentRepository.delete(creditCard);
+        paymentRepository.delete(creditCard);
     }
 }

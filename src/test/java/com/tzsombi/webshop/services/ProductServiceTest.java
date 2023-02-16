@@ -15,15 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.YearMonth;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@SpringBootTest
+@SpringBootTest(classes = FixedClockConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ProductServiceTest {
 
@@ -37,6 +36,9 @@ class ProductServiceTest {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
@@ -446,7 +448,7 @@ class ProductServiceTest {
         productRepository.save(computer);
         CreditCard card = new CreditCard(
                 "1234-5678-1234-5678",
-                YearMonth.of(2023, 4),
+                YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                  true,
                 2L

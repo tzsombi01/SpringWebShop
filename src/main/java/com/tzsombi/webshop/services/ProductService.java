@@ -35,10 +35,7 @@ public class ProductService {
 
         Product product = ProductFactory.makeProduct(rawProduct);
 
-        user.addSellingProduct(product);
-
         productRepository.save(product);
-        userRepository.save(user);
     }
 
     public void updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
@@ -150,10 +147,7 @@ public class ProductService {
             throw new AuthException(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
         }
 
-        user.deleteSellingProduct(product);
-
         productRepository.delete(product);
-        userRepository.save(user);
     }
 
     public void buyProduct(Long productId, Long userId) {

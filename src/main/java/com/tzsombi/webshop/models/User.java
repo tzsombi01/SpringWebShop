@@ -39,7 +39,8 @@ public class User implements UserDetails {
 
     @OneToMany(
             targetEntity = Product.class,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
     )
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     @ToString.Exclude
@@ -47,7 +48,8 @@ public class User implements UserDetails {
 
     @OneToMany(
             targetEntity = CreditCard.class,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
     )
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ToString.Exclude
@@ -87,21 +89,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void addSellingProduct(Product product) {
-        sellingProducts.add(product);
-    }
-
-    public void deleteSellingProduct(Product product) {
-        sellingProducts.remove(product);
-    }
-
-    public void addCard(CreditCard card) {
-        cards.add(card);
-    }
-
-    public void deleteCard(CreditCard card) {
-        cards.remove(card);
     }
 }

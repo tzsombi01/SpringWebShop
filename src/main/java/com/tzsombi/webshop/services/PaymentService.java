@@ -59,10 +59,7 @@ public class PaymentService {
             payMentRepository.save(previouslyActiveCard);
         }
 
-        user.addCard(creditCard);
-
         payMentRepository.save(creditCard);
-        userRepository.save(user);
     }
 
     public void updateCard(CreditCardRequestDTO cardRequest, Long cardId, Long userId) {
@@ -114,9 +111,6 @@ public class PaymentService {
 
         CredentialChecker.ifUserHasTheCardProceedOrElseException(user, creditCard);
 
-        user.deleteCard(creditCard);
-
         payMentRepository.delete(creditCard);
-        userRepository.save(user);
     }
 }

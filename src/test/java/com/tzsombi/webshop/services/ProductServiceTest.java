@@ -1,5 +1,7 @@
 package com.tzsombi.webshop.services;
 
+import com.tzsombi.webshop.constants.ErrorConstants;
+import com.tzsombi.webshop.exceptions.*;
 import com.tzsombi.webshop.models.*;
 import com.tzsombi.webshop.repositories.PaymentRepository;
 import com.tzsombi.webshop.repositories.ProductRepository;
@@ -13,10 +15,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -167,7 +172,7 @@ class ProductServiceTest {
         ComputerOperatingSystem expectedComputerOperatingSystem = ComputerOperatingSystem.LINUX;
         Color expectedColor = Color.GOLD;
         GpuType expectedGpuType = GpuType.AMD_Radeon_RX_6950_XT;
-        CpuType expectedCpuType = CpuType.AMD_RYZEN_6_6980HX;
+        CpuType expectedCpuType = CpuType.AMD_RYZEN_5_2600;
 
         ProductRequestDTO requestDTO = new ProductRequestDTO(
                 expectedName, expectedPrice, expectedDescription,
@@ -191,5 +196,370 @@ class ProductServiceTest {
         assertThat(updatedProduct.getColor()).isEqualTo(expectedColor);
         assertThat(updatedProduct.getGpu()).isEqualTo(expectedGpuType);
         assertThat(updatedProduct.getCpu()).isEqualTo(expectedCpuType);
+    }
+
+    @Test
+    void itShould_addProduct_ValidInput() {
+        // given
+        User user = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        User savedUser = userRepository.save(user);
+
+        String rawProductInput = """
+                {
+                    "type": "Phone",
+                    "name": "Galaxy A5",
+                    "price": "500.50",
+                    "description": "Some description",
+                    "sellerId": 1,
+                    "ramInGb": 4,
+                    "manufacturer": "Asus",
+                    "system": "ios",
+                    "color": "gold"
+                }
+                """;
+        // when
+        underTestService.addProduct(rawProductInput, savedUser.getId());
+        String expectedType = "Phone";
+        Product savedProduct = productRepository.findById(1L)
+                .orElse(null);
+
+        String type = productRepository.findProductTypeById(1L);
+
+        User userAfter = userRepository.findById(savedUser.getId())
+                .orElse(null);
+
+        // then
+        assertThat(savedProduct).isNotNull();
+        assertThat(type).isEqualTo(expectedType);
+        assertThat(userAfter.getSellingProducts().size()).isEqualTo(1);
+    }
+
+    @Test
+    void itShouldThrow_addProduct_UserDoesNotExists() {
+        // given
+        String rawProductInput = """
+                {
+                    "type": "Phone",
+                    "name": "Galaxy A5",
+                    "price": "500.50",
+                    "description": "Some description",
+                    "sellerId": 1,
+                    "ramInGb": 4,
+                    "manufacturer": "Asus",
+                    "system": "ios",
+                    "color": "gold"
+                }
+                """;
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.addProduct(rawProductInput, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+    }
+
+    @Test
+    void itShould_addProduct_ToUsersListOfProducts() {
+        // given
+        User user = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        User savedUser = userRepository.save(user);
+
+        String rawProductInput = """
+                {
+                    "type": "Phone",
+                    "name": "Galaxy A5",
+                    "price": "500.50",
+                    "description": "Some description",
+                    "sellerId": 1,
+                    "ramInGb": 4,
+                    "manufacturer": "Asus",
+                    "system": "ios",
+                    "color": "gold"
+                }
+                """;
+        // when
+        underTestService.addProduct(rawProductInput, savedUser.getId());
+
+        Product savedProduct = productRepository.findById(1L)
+                .orElse(null);
+
+        User userAfter = userRepository.findById(savedUser.getId())
+                .orElse(null);
+        // then
+        assert savedProduct != null;
+        assert userAfter != null;
+        assertThat(userAfter.getSellingProducts().size()).isEqualTo(1);
+        assertThat(savedProduct.getSellerId()).isEqualTo(savedUser.getId());
+    }
+
+    @Test
+    void itShould_deleteProduct_ValidProdId() {
+        // given
+        User user = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user);
+        Computer computer = new Computer(
+                "Dell G3 15 3500",
+                new BigDecimal(100_000),
+                "Some description",
+                1L,
+                GpuType.MSI_GeForce_RTX_3070,
+                CpuType.AMD_RYZEN_6_6980HX,
+                16,
+                "Dell",
+                Color.WHITE,
+                ComputerOperatingSystem.WINDOWS);
+        productRepository.save(computer);
+        // when
+        underTestService.deleteProduct(1L, 1L);
+
+        User userAfter = userRepository.findById(1L)
+                .orElse(null);
+
+        Product productAfter = productRepository.findById(1L)
+                .orElse(null);
+        // then
+        assert userAfter != null;
+        assertThat(productAfter).isNull();
+        assertThat(userAfter.getSellingProducts().size()).isEqualTo(0);
+    }
+
+    @Test
+    void itShouldThrowUserNotFound_deleteProduct_UserDoesNotExist() {
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.deleteProduct(1L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+    }
+
+    @Test
+    void itShouldThrowProductNotFound_deleteProduct_ProductDoesNotExist() {
+        // given
+        User user = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user);
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.deleteProduct(1L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ProductNotFoundException.class)
+                .hasMessageContaining(ErrorConstants.PRODUCT_NOT_FOUND_MSG);
+    }
+
+    @Test
+    void itShouldThrowAuthException_deleteProduct_BothExistButNotUsersProduct() {
+        // given
+        User user1 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user1);
+
+        User user2 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail2@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user2);
+
+        Computer computer = new Computer(
+                "Dell G3 15 3500",
+                new BigDecimal(100_000),
+                "Some description",
+                1L,
+                GpuType.MSI_GeForce_RTX_3070,
+                CpuType.AMD_RYZEN_6_6980HX,
+                16,
+                "Dell",
+                Color.WHITE,
+                ComputerOperatingSystem.WINDOWS);
+        productRepository.save(computer);
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.deleteProduct(1L, 2L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(AuthException.class)
+                .hasMessageContaining(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
+    }
+
+    @Test
+    void itShould_buyProduct() {
+        // given
+        User user1 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user1);
+        User user2 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail2@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user2);
+        Computer computer = new Computer(
+                "Dell G3 15 3500",
+                new BigDecimal(100_000),
+                "Some description",
+                1L,
+                GpuType.MSI_GeForce_RTX_3070,
+                CpuType.AMD_RYZEN_6_6980HX,
+                16,
+                "Dell",
+                Color.WHITE,
+                ComputerOperatingSystem.WINDOWS);
+        productRepository.save(computer);
+        CreditCard card = new CreditCard(
+                "1234-5678-1234-5678",
+                YearMonth.of(2023, 4),
+                "FirstName LastName",
+                 true,
+                2L
+        );
+        paymentRepository.save(card);
+        // when
+        underTestService.buyProduct(1L, 2L);
+
+        Product productAfter = productRepository.findById(1L)
+                .orElse(null);
+        // then
+        assertThat(productAfter.getBuyers().size()).isEqualTo(1);
+    }
+
+    @Test
+    void itShouldThrow_buyProduct_NoActiveCard() {
+        // given
+        User user1 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user1);
+        User user2 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail2@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user2);
+        Computer computer = new Computer(
+                "Dell G3 15 3500",
+                new BigDecimal(100_000),
+                "Some description",
+                1L,
+                GpuType.MSI_GeForce_RTX_3070,
+                CpuType.AMD_RYZEN_6_6980HX,
+                16,
+                "Dell",
+                Color.WHITE,
+                ComputerOperatingSystem.WINDOWS);
+        productRepository.save(computer);
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.buyProduct(1L, 2L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(NoActiveCardFoundException.class)
+                .hasMessageContaining(ErrorConstants.SET_AN_ACTIVE_CARD_MSG);
+    }
+
+    @Test
+    void itShouldThrow_buyProduct_ProductDoesNotExist() {
+        // given
+        User user1 = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user1);
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ProductNotFoundException.class)
+                .hasMessageContaining(ErrorConstants.PRODUCT_NOT_FOUND_MSG);
+    }
+
+    @Test
+    void itShouldThrow_buyProduct_UserDoesNotExist() {
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+    }
+
+    @Test
+    void itShouldThrow_buyProduct_CanNotBuyOwnProduct() {
+        // given
+        User user = User.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("someemail@gmail.com")
+                .password("password")
+                .role(Role.USER)
+                .build();
+        userRepository.save(user);
+        Computer computer = new Computer(
+                "Dell G3 15 3500",
+                new BigDecimal(100_000),
+                "Some description",
+                1L,
+                GpuType.MSI_GeForce_RTX_3070,
+                CpuType.AMD_RYZEN_6_6980HX,
+                16,
+                "Dell",
+                Color.WHITE,
+                ComputerOperatingSystem.WINDOWS);
+        productRepository.save(computer);
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
+                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(CanNotBuyOwnProductExeption.class)
+                .hasMessageContaining(ErrorConstants.CANNOT_BUY_YOUR_OWN_PRODUCT_MSG);
     }
 }

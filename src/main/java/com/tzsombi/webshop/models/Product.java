@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -44,7 +46,9 @@ public abstract class Product {
     @Column(name = "seller_id")
     private Long sellerId;
 
-    @ManyToMany
+    @ManyToMany(
+            fetch = FetchType.EAGER
+    )
     @JoinTable(
             name = "user_product",
             joinColumns = {
@@ -60,7 +64,7 @@ public abstract class Product {
             }
     )
     @ToString.Exclude
-    Set<User> buyers = new HashSet<>();
+    List<User> buyers = new ArrayList<>();
 
     public Product(String name, BigDecimal price, String description, Long sellerId) {
         this.name = name;

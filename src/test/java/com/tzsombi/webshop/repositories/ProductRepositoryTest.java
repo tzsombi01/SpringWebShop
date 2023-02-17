@@ -22,11 +22,6 @@ class ProductRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
-
     @Test
     void itShould_findProductTypeById_ExistingProduct() {
         // given

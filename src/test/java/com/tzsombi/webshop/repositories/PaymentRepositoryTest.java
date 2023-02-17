@@ -24,10 +24,7 @@ class PaymentRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
+
 
     @Test
     void itShould_findActiveCardUnderUserById_ExistingUserAndCard() {

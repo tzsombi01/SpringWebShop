@@ -23,8 +23,9 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public AuthenticationResponse updateUser(@PathVariable Long userId, @RequestBody UserRequestDTO userRequestDTO) {
-        return userService.updateUserById(userId, userRequestDTO);
+    public ResponseEntity<AuthenticationResponse> updateUser(@PathVariable Long userId, @RequestBody UserRequestDTO userRequestDTO) {
+        AuthenticationResponse response = userService.updateUserById(userId, userRequestDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{userId}")

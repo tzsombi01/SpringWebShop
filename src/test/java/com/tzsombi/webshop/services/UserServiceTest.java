@@ -45,11 +45,6 @@ class UserServiceTest {
         underTestService = new UserService(userRepository, userResponseDTOMapper, passwordEncoder, jwtService);
     }
 
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
-
     @Test
     void itShould_GetUserById_WhenUserExists() {
         // given

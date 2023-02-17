@@ -17,10 +17,6 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository underTestUserRepository;
 
-    @AfterEach
-    void tearDown() {
-        underTestUserRepository.deleteAll();
-    }
 
     @Test
     void itShould_findByEmail_ExistingEmail() {

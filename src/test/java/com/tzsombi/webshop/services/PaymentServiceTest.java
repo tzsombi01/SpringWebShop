@@ -57,11 +57,6 @@ class PaymentServiceTest {
         underTestService = new PaymentService(paymentRepository, creditCardResponseDTOMapper, userRepository, clock);
     }
 
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
-
     @Test
     void itShould_getCard() {
         // given

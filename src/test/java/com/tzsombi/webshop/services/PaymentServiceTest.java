@@ -8,7 +8,6 @@ import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.*;
 import com.tzsombi.webshop.repositories.PaymentRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -237,6 +237,7 @@ class ProductServiceTest {
                 .orElse(null);
 
         // then
+        assert userAfter != null;
         assertThat(savedProduct).isNotNull();
         assertThat(type).isEqualTo(expectedType);
         assertThat(userAfter.getSellingProducts().size()).isEqualTo(1);
@@ -460,6 +461,7 @@ class ProductServiceTest {
         Product productAfter = productRepository.findById(1L)
                 .orElse(null);
         // then
+        assert productAfter != null;
         assertThat(productAfter.getBuyers().size()).isEqualTo(1);
     }
 

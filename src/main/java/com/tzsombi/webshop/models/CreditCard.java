@@ -33,6 +33,11 @@ public class CreditCard {
     @Column(name = "user_id")
     private Long userId;
 
+    @Transient
+    public CardType getType() {
+        return CardType.detect(cardNumber);
+    }
+
 
     public CreditCard(String cardNumber, YearMonth expiryDate, String fullName, Boolean isActive, Long userId) {
         this.cardNumber = cardNumber;

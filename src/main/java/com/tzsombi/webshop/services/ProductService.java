@@ -8,6 +8,7 @@ import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.utils.CredentialChecker;
 import com.tzsombi.webshop.utils.ProductFactory;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,9 @@ public class ProductService {
 
         Product product = ProductFactory.makeProduct(rawProduct);
 
+        user.addProduct(product);
         productRepository.save(product);
+        userRepository.save(user);
     }
 
     public void updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
@@ -136,6 +139,7 @@ public class ProductService {
         return computer;
     }
 
+    @Transactional
     public void deleteProduct(Long productId, Long sellerId) {
         User user = userRepository.findById(sellerId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
@@ -147,6 +151,8 @@ public class ProductService {
             throw new AuthException(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
         }
 
+        user.deleteProduct(product);
+        userRepository.save(user);
         productRepository.delete(product);
     }
 

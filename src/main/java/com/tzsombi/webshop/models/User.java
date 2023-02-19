@@ -90,4 +90,12 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void addProduct(Product product) {
+        sellingProducts.add(product);
+    }
+
+    public void deleteProduct(Product product) {
+        sellingProducts.remove(product);
+    }
 }

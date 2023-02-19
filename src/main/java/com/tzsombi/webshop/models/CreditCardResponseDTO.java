@@ -6,6 +6,7 @@ public record CreditCardResponseDTO(
         String cardNumber,
         YearMonth expiryDate,
         String fullName,
+        CardType type,
         Boolean isActive
 ) {
 }

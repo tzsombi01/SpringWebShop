@@ -14,6 +14,7 @@ public class CreditCardResponseDTOMapper implements Function<CreditCard, CreditC
                 creditCard.getCardNumber(),
                 creditCard.getExpiryDate(),
                 creditCard.getFullName(),
+                creditCard.getType(),
                 creditCard.getIsActive()
         );
     }

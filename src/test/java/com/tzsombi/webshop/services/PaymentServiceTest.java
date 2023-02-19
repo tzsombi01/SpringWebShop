@@ -193,7 +193,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 true,
                 "FirstName LastName"
@@ -225,7 +225,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock).minusMonths(1)),
                 true,
                 "FirstName LastName"
@@ -251,7 +251,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCard creditCard = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -259,7 +259,7 @@ class PaymentServiceTest {
         );
         paymentRepository.save(creditCard);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 true,
                 "FirstName LastName"
@@ -292,7 +292,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCard creditCard = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -364,7 +364,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user2);
         CreditCard creditCard = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -391,14 +391,14 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCard creditCard = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
                 1L
         );
         paymentRepository.save(creditCard);
-        String expectedCardNumber = "5678-5678-1234-5678";
+        String expectedCardNumber = "4111111111111111";
         YearMonth expectedExpiryDate = YearMonth.from(ZonedDateTime.now(clock)).plusMonths(1);
         boolean expectedIsActive= true;
         String expectedFullName = "Another Name";
@@ -425,7 +425,7 @@ class PaymentServiceTest {
     void itShouldThrow_updateCard_UserDoesNotExist() {
         // given
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 true,
                 "FirstName LastName"
@@ -450,7 +450,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 true,
                 "FirstName LastName"
@@ -483,7 +483,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user2);
         CreditCard creditCard = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -491,7 +491,7 @@ class PaymentServiceTest {
         );
         paymentRepository.save(creditCard);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 true,
                 "FirstName LastName"
@@ -516,7 +516,7 @@ class PaymentServiceTest {
                 .build();
         userRepository.save(user);
         CreditCard creditCard1 = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -524,7 +524,7 @@ class PaymentServiceTest {
         );
         paymentRepository.save(creditCard1);
         CreditCard creditCard2 = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 false,

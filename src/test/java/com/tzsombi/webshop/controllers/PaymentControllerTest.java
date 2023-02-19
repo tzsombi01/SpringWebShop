@@ -19,7 +19,6 @@ import java.time.Clock;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,7 +59,7 @@ class PaymentControllerTest {
                 .build();
         userRepository.save(user);
         CreditCard card = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444\n",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -90,7 +89,7 @@ class PaymentControllerTest {
         userRepository.save(user);
         String expiryDate = String.valueOf(YearMonth.from(ZonedDateTime.now(clock)));
         String inputCardAsString = String.format("{" +
-                "\"cardNumber\": \"1234-5678-1234-5678\", " +
+                "\"cardNumber\": \"5555555555554444\", " +
                 "\"expiryDate\": \"%s\", " +
                 "\"fullName\": \"FirstName LastName\", " +
                 "\"isActive\": true}", expiryDate);
@@ -117,7 +116,7 @@ class PaymentControllerTest {
                 .build();
         userRepository.save(user);
         CreditCard card = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -145,7 +144,7 @@ class PaymentControllerTest {
                 .build();
         userRepository.save(user);
         CreditCard card = new CreditCard(
-                "1234-5678-1234-5678",
+                "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
@@ -154,7 +153,7 @@ class PaymentControllerTest {
         paymentRepository.save(card);
         String expiryDate = String.valueOf(YearMonth.from(ZonedDateTime.now(clock)).plusMonths(1));
         String inputCardAsString = String.format("{" +
-                "\"cardNumber\": \"9876-5432-9876-5432\", " +
+                "\"cardNumber\": \"4111111111111111\", " +
                 "\"expiryDate\": \"%s\", " +
                 "\"fullName\": \"FirstName2 LastName2\", " +
                 "\"isActive\": false}", expiryDate);

@@ -48,7 +48,9 @@ public class PaymentService {
 
         CreditCard creditCard = CreditCardFactory.makeCard(cardRequest);
 
-        CreditCardValidator.validate(creditCard, clock);
+        CreditCardValidator.luhnValidate(creditCard, clock);
+
+        CreditCardValidator.validateCardByVendor(creditCard);
 
         if (creditCard.getIsActive() && user.getCards().stream().anyMatch(CreditCard::getIsActive)) {
             CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
@@ -98,7 +100,9 @@ public class PaymentService {
             creditCard.setFullName(fullName);
         }
 
-        CreditCardValidator.validate(creditCard, clock);
+        CreditCardValidator.luhnValidate(creditCard, clock);
+
+        CreditCardValidator.validateCardByVendor(creditCard);
 
         paymentRepository.save(creditCard);
     }

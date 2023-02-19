@@ -19,4 +19,5 @@ public class ErrorConstants {
             "An error occurred when trying to set your credit card, please reload the page and try again!";
     public static final String NO_PERMISSION_TO_MODIFY_CARD = "You do not have permission to modify this card!";
     public static final String EXPIRY_MUST_BE_AFTER_CURRENT_DATE_MSG = "Card's expiry date must be after current date!";
+    public static final String CARD_NUMBER_INVALID = "Card number is invalid!";
 }

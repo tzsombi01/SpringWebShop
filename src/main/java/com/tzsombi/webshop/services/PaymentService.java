@@ -116,6 +116,9 @@ public class PaymentService {
 
         CredentialChecker.ifUserHasTheCardProceedOrElseException(user, creditCard);
 
+        user.deleteCard(creditCard);
+
+        userRepository.save(user);
         paymentRepository.delete(creditCard);
     }
 }

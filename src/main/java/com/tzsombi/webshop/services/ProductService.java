@@ -36,9 +36,7 @@ public class ProductService {
 
         Product product = ProductFactory.makeProduct(rawProduct);
 
-        user.addProduct(product);
         productRepository.save(product);
-        userRepository.save(user);
     }
 
     public void updateProduct(Long productId, ProductRequestDTO productRequestDTO) {

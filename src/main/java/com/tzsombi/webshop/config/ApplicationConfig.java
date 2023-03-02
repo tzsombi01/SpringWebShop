@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.config;
 
+import com.tzsombi.webshop.constants.ErrorConstants;
 import com.tzsombi.webshop.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
     }
 
     @Bean

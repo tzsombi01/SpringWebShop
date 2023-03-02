@@ -111,7 +111,7 @@ class PaymentServiceTest {
         assertThatThrownBy(() -> underTestService.getCard(1L, 2L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '2'");
 
     }
 
@@ -322,7 +322,7 @@ class PaymentServiceTest {
         assertThatThrownBy(() -> underTestService.deleteCard(1L, 1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test
@@ -435,7 +435,7 @@ class PaymentServiceTest {
         assertThatThrownBy(() -> underTestService.updateCard(requestDTO, 1L, 1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test

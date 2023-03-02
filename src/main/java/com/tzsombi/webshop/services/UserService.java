@@ -3,6 +3,7 @@ package com.tzsombi.webshop.services;
 import com.tzsombi.webshop.auth.AuthenticationResponse;
 import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.constants.ErrorConstants;
+import com.tzsombi.webshop.error_handling.ErrorCode;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import com.tzsombi.webshop.models.User;
@@ -11,6 +12,7 @@ import com.tzsombi.webshop.models.UserResponseDTO;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.utils.CredentialChecker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +34,12 @@ public class UserService {
     public UserResponseDTO getUserById(Long userId) {
         return userRepository.findById(userId)
                 .map(userResponseDTOMapper)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 
     public AuthenticationResponse updateUserById(Long userId, UserRequestDTO userRequestDTO) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         String firstName = userRequestDTO.firstName();
         String lastName = userRequestDTO.lastName();
@@ -78,7 +80,7 @@ public class UserService {
 
     public void deleteUserById(Long userId) {
         if (! userRepository.existsById(userId)) {
-            throw new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG);
+            throw UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId));
         }
         userRepository.deleteById(userId);
     }

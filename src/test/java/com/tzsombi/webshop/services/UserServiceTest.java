@@ -113,7 +113,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> underTestService.getUserById(1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test
@@ -148,7 +148,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> underTestService.getUserById(4L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '4'");
     }
 
     @Test
@@ -237,7 +237,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> underTestService.updateUserById(1L, userRequestDTO))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test
@@ -290,6 +290,6 @@ class UserServiceTest {
         assertThatThrownBy(() -> underTestService.deleteUserById(1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 }

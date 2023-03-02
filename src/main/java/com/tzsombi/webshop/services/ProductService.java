@@ -1,6 +1,7 @@
 package com.tzsombi.webshop.services;
 
 import com.tzsombi.webshop.constants.ErrorConstants;
+import com.tzsombi.webshop.error_handling.ErrorCode;
 import com.tzsombi.webshop.exceptions.*;
 import com.tzsombi.webshop.models.*;
 import com.tzsombi.webshop.repositories.PaymentRepository;
@@ -8,7 +9,6 @@ import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.utils.CredentialChecker;
 import com.tzsombi.webshop.utils.ProductFactory;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +32,7 @@ public class ProductService {
 
     public void addProduct(String rawProduct, Long sellerId) {
         User user = userRepository.findById(sellerId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(sellerId)));
 
         Product product = ProductFactory.makeProduct(rawProduct);
 
@@ -137,10 +137,9 @@ public class ProductService {
         return computer;
     }
 
-    @Transactional
     public void deleteProduct(Long productId, Long sellerId) {
         User user = userRepository.findById(sellerId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(sellerId)));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
@@ -156,7 +155,7 @@ public class ProductService {
 
     public void buyProduct(Long productId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));

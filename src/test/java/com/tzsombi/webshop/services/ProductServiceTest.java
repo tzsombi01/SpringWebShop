@@ -265,7 +265,7 @@ class ProductServiceTest {
         assertThatThrownBy(() -> underTestService.addProduct(rawProductInput, 1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test
@@ -353,7 +353,7 @@ class ProductServiceTest {
         assertThatThrownBy(() -> underTestService.deleteProduct(1L, 1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test
@@ -532,7 +532,7 @@ class ProductServiceTest {
         assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining(ErrorConstants.USER_NOT_FOUND_MSG);
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
     }
 
     @Test

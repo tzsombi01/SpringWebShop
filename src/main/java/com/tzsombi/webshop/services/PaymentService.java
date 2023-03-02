@@ -1,6 +1,7 @@
 package com.tzsombi.webshop.services;
 
 import com.tzsombi.webshop.constants.ErrorConstants;
+import com.tzsombi.webshop.error_handling.ErrorCode;
 import com.tzsombi.webshop.exceptions.CardNotFoundException;
 import com.tzsombi.webshop.exceptions.StateMisMatchException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
@@ -32,7 +33,7 @@ public class PaymentService {
 
     public CreditCardResponseDTO getCard(Long cardId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         CreditCard creditCard = paymentRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));
@@ -44,7 +45,7 @@ public class PaymentService {
 
     public void register(CreditCardRequestDTO cardRequest, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         CreditCard creditCard = CreditCardFactory.makeCard(cardRequest);
 
@@ -55,7 +56,7 @@ public class PaymentService {
         if (creditCard.getIsActive() && user.getCards().stream().anyMatch(CreditCard::getIsActive)) {
             CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
                     .orElseThrow(() ->
-                            new StateMisMatchException(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG));
+                            StateMisMatchException.ofCode(ErrorCode.STATE_MISMATCH));
 
             previouslyActiveCard.setIsActive(false);
             paymentRepository.save(previouslyActiveCard);
@@ -67,7 +68,7 @@ public class PaymentService {
 
     public void updateCard(CreditCardRequestDTO cardRequest, Long cardId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         CreditCard creditCard = paymentRepository.findById(cardId)
                         .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));
@@ -89,7 +90,7 @@ public class PaymentService {
             if (isActive) {
                 CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
                         .orElseThrow(() ->
-                                new StateMisMatchException(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG));
+                                StateMisMatchException.ofCode(ErrorCode.STATE_MISMATCH));
 
                 previouslyActiveCard.setIsActive(false);
                 paymentRepository.save(previouslyActiveCard);
@@ -109,7 +110,7 @@ public class PaymentService {
 
     public void deleteCard(Long cardId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         CreditCard creditCard = paymentRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(ErrorConstants.CARD_NOT_FOUND_MSG));

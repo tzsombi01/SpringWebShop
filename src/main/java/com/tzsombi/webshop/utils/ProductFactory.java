@@ -13,7 +13,10 @@ public class ProductFactory {
     public static Product makeProduct(String rawProduct) {
         ObjectMapper mapper = JsonMapper
                 .builder()
-                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true).build();
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_VALUES, true)
+                .build();
 
         try {
             Product product = mapper.readValue(rawProduct, Product.class);

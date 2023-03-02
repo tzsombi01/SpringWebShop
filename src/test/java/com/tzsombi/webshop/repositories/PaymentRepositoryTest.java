@@ -4,6 +4,7 @@ import com.tzsombi.webshop.models.CreditCard;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,8 +24,6 @@ class PaymentRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
-
-
 
     @Test
     void itShould_findActiveCardUnderUserById_ExistingUserAndCard() {

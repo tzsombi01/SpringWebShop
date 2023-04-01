@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../user';
+import { User } from '../interfaces/user';
+import { UserserviceService } from '../userservice.service';
 
 @Component({
   selector: 'app-header-component',
@@ -10,20 +11,22 @@ export class HeaderComponent implements OnInit {
   webshopLogoUrl: string;
   user: User;
 
-  constructor() { 
+  constructor(private userService: UserserviceService) {
     this.webshopLogoUrl = "assets/img/webshop_logo.jpg";
-    this.user = this.getUsersData();
+    this.user = {name: "some", email: "yeey"};
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.getUsersData();
+  }
 
-  private getUsersData(): User {
-    // TODO to be replaced by an API call
-    const user: User = {
-      name: "Random Name",
-      email: "wuhuu@gmail.com",
-      profilePictureUrl: "assets/img/profile_picture_default.PNG"
-    };
-    return user;
+  private getUsersData(): void {
+    this.userService.getUserById().subscribe(
+      (response: User) => {
+        this.user = response;
+      },  
+      (error: any) => console.error(error),
+      () => console.log('User retrieved')
+    );
   }
 }

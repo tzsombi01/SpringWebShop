@@ -5,23 +5,25 @@
   overflow:auto;
   background-color: deepskyblue;
   padding: 20px 10px;
+  gap: 8px;
 }
 
 .main-logo {
-  width: 150px;
+  width: 200px;
   border-radius: 25%;
-}
-
-.search-bar-container {
   align-self: center;
+  flex-shrink: 1;
 }
 
 .search-bar {
+  align-self: center;
   font-size: 20px;
+  flex-basis: 200px;
+  flex-grow: 0.3;
 }
 
 .user-prof-picture {
-  width: 120px;
-  height: 120px;
+  width: 160px;
   align-self: center;
+  flex-grow: 1;
 }

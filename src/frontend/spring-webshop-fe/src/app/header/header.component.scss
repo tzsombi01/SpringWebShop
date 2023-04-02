@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  overflow:auto;
+  background-color: deepskyblue;
+  padding: 20px 10px;
+  gap: 8px;
+}
+
+.main-logo {
+  width: 200px;
+  border-radius: 25%;
+  align-self: center;
+  flex-shrink: 1;
+}
+
+.search-bar {
+  align-self: center;
+  font-size: 20px;
+  flex-basis: 200px;
+  flex-grow: 0.3;
+}
+
+.user-prof-picture {
+  width: 160px;
+  align-self: center;
+  flex-grow: 1;
+}

@@ -1,0 +1,17 @@
+.product-container {
+    display: flex;
+    flex-direction: column;
+    margin: 30px;
+
+    .product-table {
+        border: 8px solid;
+        border-style: groove;
+    }
+
+    #products-caption {
+        font-size: 40px;
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+}
+

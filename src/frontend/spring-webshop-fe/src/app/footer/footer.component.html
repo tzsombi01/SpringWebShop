@@ -1,0 +1,6 @@
+<div class="footer">
+    <div class="disclaimer" *ngFor="let line of lines; let i = index;">
+        <p> {{ line }} </p>
+        <hr class="horizontal-closing-line" *ngIf="i == lines.length - 2">
+    </div>
+</div>

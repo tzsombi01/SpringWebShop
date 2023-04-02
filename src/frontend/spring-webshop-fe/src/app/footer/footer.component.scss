@@ -1,0 +1,18 @@
+.footer {
+    display: flex;
+    flex-direction: column;
+    background-color: antiquewhite;
+    position: relative;
+
+    .disclaimer {
+        align-self: center;
+        font-size: 18px;
+    }
+
+    .horizontal-closing-line {
+        position: absolute;
+        left: 12.5%;
+        right: 12.5%;
+        border-top: 1px solid black;
+    }
+}

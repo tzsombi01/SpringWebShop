@@ -1,0 +1,18 @@
+<div class="product-container">
+    
+    <table class="product-table" *ngFor="let product of products; let i = index;">
+        <caption *ngIf="i == 0" id="products-caption">Products of our webshop:</caption>
+        <tr>
+            <th>Product id</th>
+            <th>Product name</th>
+            <th>Product price</th>
+            <th>Product description</th>
+            <th>Product sellerId</th>
+        </tr>
+        <th> {{ product.id }} </th>
+        <th> {{ product.name }} </th>
+        <th> {{ product.price | currency: "USD" }} </th>
+        <th> {{ product.description ? product.description : "Description"}} </th>
+        <th> {{ product.sellerId }} </th>
+    </table>
+</div>

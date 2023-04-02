@@ -13,9 +13,7 @@ public class DemoController {
         return """
                 {
                     "name": "Wuhuu",
-                    "email": "wuhuhu@gmail.com",
-                    "profilePictureUrl": "url",
-                    "yey": "yey"
+                    "email": "wuhuhu@gmail.com"
                 }""";
     }
 }

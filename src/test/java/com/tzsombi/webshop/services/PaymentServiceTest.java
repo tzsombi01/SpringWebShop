@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.services;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.constants.ErrorConstants;
 import com.tzsombi.webshop.exceptions.AuthException;
 import com.tzsombi.webshop.exceptions.CardNotFoundException;
@@ -15,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.*;
 
@@ -34,8 +34,7 @@ class FixedClockConfig {
 }
 
 @SpringBootTest(classes = FixedClockConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class PaymentServiceTest {
+class PaymentServiceTest extends AbstractTestContainer {
 
     private PaymentService underTestService;
 
@@ -54,6 +53,8 @@ class PaymentServiceTest {
     @BeforeEach
     void setUp() {
         underTestService = new PaymentService(paymentRepository, creditCardResponseDTOMapper, userRepository, clock);
+        userRepository.deleteAll();
+        paymentRepository.deleteAll();
     }
 
     @Test
@@ -66,18 +67,19 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard expected = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(expected);
+        CreditCard savedCard = paymentRepository.save(expected);
 
         // when
-        CreditCardResponseDTO responseDTO = underTestService.getCard(1L, 1L);
+        CreditCardResponseDTO responseDTO = underTestService.getCard(savedCard.getId(), savedUser.getId());
 
         // then
         assertThat(responseDTO.cardNumber()).isEqualTo(expected.getCardNumber());
@@ -96,22 +98,23 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard expected = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(expected);
+        CreditCard savedCard = paymentRepository.save(expected);
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.getCard(1L, 2L))
+        assertThatThrownBy(() -> underTestService.getCard(savedCard.getId(), -1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '2'");
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '-1'");
 
     }
 
@@ -125,19 +128,20 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard expected = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
         paymentRepository.save(expected);
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.getCard(2L, 1L))
+        assertThatThrownBy(() -> underTestService.getCard(-1L, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(CardNotFoundException.class)
                 .hasMessageContaining(ErrorConstants.CARD_NOT_FOUND_MSG);
@@ -153,7 +157,8 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
+
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -161,20 +166,20 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
 
         CreditCard expected = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser1.getId()
         );
-        paymentRepository.save(expected);
+        CreditCard savedCard = paymentRepository.save(expected);
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.getCard(1L, 2L))
+        assertThatThrownBy(() -> underTestService.getCard(savedCard.getId(), savedUser2.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(AuthException.class)
                 .hasMessageContaining(ErrorConstants.NO_PERMISSION_TO_MODIFY_CARD);
@@ -191,7 +196,8 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
@@ -200,12 +206,12 @@ class PaymentServiceTest {
         );
 
         // when
-        underTestService.register(requestDTO, 1L);
+        underTestService.register(requestDTO, savedUser.getId());
 
-        User userAfter = userRepository.findById(1L)
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
 
-        CreditCard expected = paymentRepository.findById(1L)
+        CreditCard expected = paymentRepository.findById(userAfter.getCards().stream().findFirst().get().getId())
                 .orElse(null);
         // then
         assert userAfter != null;
@@ -223,7 +229,7 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock).minusMonths(1)),
@@ -233,7 +239,7 @@ class PaymentServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.register(requestDTO, 1L))
+        assertThatThrownBy(() -> underTestService.register(requestDTO, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(ExpiryDateMustBeAfterCurrentDateException.class)
                 .hasMessageContaining(ErrorConstants.EXPIRY_MUST_BE_AFTER_CURRENT_DATE_MSG);
@@ -249,15 +255,17 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard creditCard = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(creditCard);
+        CreditCard savedCard = paymentRepository.save(creditCard);
+
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
@@ -266,12 +274,12 @@ class PaymentServiceTest {
         );
 
         // when
-        underTestService.register(requestDTO, 1L);
+        underTestService.register(requestDTO, savedUser.getId());
 
-        CreditCard firstCardAfter = paymentRepository.findById(1L)
+        CreditCard firstCardAfter = paymentRepository.findById(savedCard.getId())
                 .orElse(null);
 
-        User userAfter = userRepository.findById(1L)
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
         // then
         assert firstCardAfter != null;
@@ -290,28 +298,26 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         CreditCard creditCard = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(creditCard);
+        CreditCard savedCard = paymentRepository.save(creditCard);
 
         // when
-        underTestService.deleteCard(1L, 1L);
+        underTestService.deleteCard(savedCard.getId(), savedUser.getId());
 
-        CreditCard cardAfter = paymentRepository.findById(1L)
-                .orElse(null);
+        CreditCard cardAfter = paymentRepository.findById(savedUser.getId()).orElse(null);
 
-        User userAfter = userRepository.findById(1L)
-                .orElse(null);
+        User userAfter = userRepository.findById(savedUser.getId()).orElse(null);
         // then
         assert userAfter != null;
         assertThat(cardAfter).isNull();
-        assertThat(userAfter.getCards().size()).isEqualTo(0);
+        assertThat(userAfter.getCards().size()).isZero();
     }
 
     @Test
@@ -319,10 +325,10 @@ class PaymentServiceTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> underTestService.deleteCard(1L, 1L))
+        assertThatThrownBy(() -> underTestService.deleteCard(-1L, -1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '-1'");
     }
 
     @Test
@@ -335,10 +341,10 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         // when
         // then
-        assertThatThrownBy(() -> underTestService.deleteCard(1L, 1L))
+        assertThatThrownBy(() -> underTestService.deleteCard(-1L, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(CardNotFoundException.class)
                 .hasMessageContaining(ErrorConstants.CARD_NOT_FOUND_MSG);
@@ -354,7 +360,7 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -362,18 +368,18 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
         CreditCard creditCard = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser1.getId()
         );
-        paymentRepository.save(creditCard);
+        CreditCard savedCard = paymentRepository.save(creditCard);
         // when
         // then
-        assertThatThrownBy(() -> underTestService.deleteCard(1L, 2L))
+        assertThatThrownBy(() -> underTestService.deleteCard(savedCard.getId(), savedUser2.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(AuthException.class)
                 .hasMessageContaining(ErrorConstants.NO_PERMISSION_TO_MODIFY_CARD);
@@ -389,15 +395,17 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard creditCard = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(creditCard);
+        CreditCard savedCard = paymentRepository.save(creditCard);
+
         String expectedCardNumber = "4111111111111111";
         YearMonth expectedExpiryDate = YearMonth.from(ZonedDateTime.now(clock)).plusMonths(1);
         boolean expectedIsActive= true;
@@ -409,10 +417,9 @@ class PaymentServiceTest {
                 expectedFullName
         );
         // when
-        underTestService.updateCard(requestDTO, 1L, 1L);
+        underTestService.updateCard(requestDTO, savedCard.getId(), savedUser.getId());
 
-        CreditCard cardAfter = paymentRepository.findById(1L)
-                .orElse(null);
+        CreditCard cardAfter = paymentRepository.findById(savedCard.getId()).orElse(null);
         // then
         assert cardAfter != null;
         assertThat(cardAfter.getCardNumber()).isEqualTo(expectedCardNumber);
@@ -432,10 +439,10 @@ class PaymentServiceTest {
         );
         // when
         // then
-        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, 1L, 1L))
+        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, -1L, -1L))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '1'");
+                .hasMessageContaining("Reason: 'USER_NOT_FOUND' Id: '-1'");
     }
 
     @Test
@@ -448,7 +455,8 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
@@ -457,7 +465,7 @@ class PaymentServiceTest {
         );
         // when
         // then
-        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, 1L, 1L))
+        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, -1L, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(CardNotFoundException.class)
                 .hasMessageContaining(ErrorConstants.CARD_NOT_FOUND_MSG);
@@ -473,7 +481,8 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
+
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -481,15 +490,17 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
+
         CreditCard creditCard = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser1.getId()
         );
-        paymentRepository.save(creditCard);
+        CreditCard savedCard = paymentRepository.save(creditCard);
+
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
@@ -498,7 +509,7 @@ class PaymentServiceTest {
         );
         // when
         // then
-        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, 1L, 2L))
+        assertThatThrownBy(() -> underTestService.updateCard(requestDTO, savedCard.getId(), savedUser2.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(AuthException.class)
                 .hasMessageContaining(ErrorConstants.NO_PERMISSION_TO_MODIFY_CARD);
@@ -514,23 +525,26 @@ class PaymentServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard creditCard1 = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(creditCard1);
+        CreditCard savedCard1 = paymentRepository.save(creditCard1);
+
         CreditCard creditCard2 = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 false,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(creditCard2);
+        CreditCard savedCard2 = paymentRepository.save(creditCard2);
+
         CreditCardRequestDTO requestDTO = new CreditCardRequestDTO(
                 null,
                 null,
@@ -538,12 +552,12 @@ class PaymentServiceTest {
                 null
         );
         // when
-        underTestService.updateCard(requestDTO, 2L, 1L);
+        underTestService.updateCard(requestDTO, savedCard2.getId(), savedUser.getId());
 
-        CreditCard card1After = paymentRepository.findById(1L)
+        CreditCard card1After = paymentRepository.findById(savedCard1.getId())
                 .orElse(null);
 
-        CreditCard card2After = paymentRepository.findById(2L)
+        CreditCard card2After = paymentRepository.findById(savedCard2.getId())
                 .orElse(null);
         // then
         assert card1After != null;

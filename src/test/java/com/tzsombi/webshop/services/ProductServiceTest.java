@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.services;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.constants.ErrorConstants;
 import com.tzsombi.webshop.exceptions.*;
 import com.tzsombi.webshop.models.*;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest(classes = FixedClockConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ProductServiceTest {
+class ProductServiceTest extends AbstractTestContainer {
 
     private ProductService underTestService;
 
@@ -43,6 +44,9 @@ class ProductServiceTest {
     @BeforeEach
     void setUp() {
         underTestService = new ProductService(productRepository, userRepository, paymentRepository);
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        paymentRepository.deleteAll();
     }
 
     @Test
@@ -56,15 +60,18 @@ class ProductServiceTest {
                 .role(Role.USER)
                 .build();
         User savedUser = userRepository.save(user);
+
         Phone phone = new Phone(
                 "iPhone 6",
                 new BigDecimal(100_000),
                 "Some description",
-                savedUser.getId(), 4,
+                savedUser.getId(),
+                4,
                 "Apple",
                 PhoneOperatingSystem.IOS,
                 Color.BLACK);
         productRepository.save(phone);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
@@ -212,32 +219,31 @@ class ProductServiceTest {
                 .build();
         User savedUser = userRepository.save(user);
 
-        String rawProductInput = """
+        String rawProductInput = String.format("""
                 {
                     "type": "Phone",
                     "name": "Galaxy A5",
                     "price": "500.50",
                     "description": "Some description",
-                    "sellerId": 1,
+                    "sellerId": %s,
                     "ramInGb": 4,
                     "manufacturer": "Asus",
                     "system": "ios",
                     "color": "gold"
                 }
-                """;
+                """, savedUser.getId());
         // when
         underTestService.addProduct(rawProductInput, savedUser.getId());
         String expectedType = "Phone";
-        Product savedProduct = productRepository.findById(1L)
-                .orElse(null);
-
-        String type = productRepository.findProductTypeById(1L);
 
         User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
 
+        Product savedProduct = productRepository.findById(userAfter.getSellingProducts().stream().findFirst().get().getId())
+                .orElse(null);
+
+        String type = productRepository.findProductTypeById(savedProduct.getId());
         // then
-        assert userAfter != null;
         assertThat(savedProduct).isNotNull();
         assertThat(type).isEqualTo(expectedType);
         assertThat(userAfter.getSellingProducts().size()).isEqualTo(1);
@@ -280,26 +286,26 @@ class ProductServiceTest {
                 .build();
         User savedUser = userRepository.save(user);
 
-        String rawProductInput = """
+        String rawProductInput = String.format("""
                 {
                     "type": "Phone",
                     "name": "Galaxy A5",
                     "price": "500.50",
                     "description": "Some description",
-                    "sellerId": 1,
+                    "sellerId": %s,
                     "ramInGb": 4,
                     "manufacturer": "Asus",
                     "system": "ios",
                     "color": "gold"
                 }
-                """;
+                """, savedUser.getId());
         // when
         underTestService.addProduct(rawProductInput, savedUser.getId());
 
-        Product savedProduct = productRepository.findById(1L)
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
 
-        User userAfter = userRepository.findById(savedUser.getId())
+        Product savedProduct = productRepository.findById(userAfter.getSellingProducts().stream().findFirst().get().getId())
                 .orElse(null);
         // then
         assert savedProduct != null;
@@ -318,31 +324,33 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
-        // when
-        underTestService.deleteProduct(1L, 1L);
+        Computer savedComputer = productRepository.save(computer);
 
-        User userAfter = userRepository.findById(1L)
+        // when
+        underTestService.deleteProduct(savedComputer.getId(), savedUser.getId());
+
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
 
-        Product productAfter = productRepository.findById(1L)
+        Product productAfter = productRepository.findById(savedComputer.getId())
                 .orElse(null);
         // then
         assert userAfter != null;
         assertThat(productAfter).isNull();
-        assertThat(userAfter.getSellingProducts().size()).isEqualTo(0);
+        assertThat(userAfter.getSellingProducts().size()).isZero();
     }
 
     @Test
@@ -366,10 +374,11 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         // when
         // then
-        assertThatThrownBy(() -> underTestService.deleteProduct(1L, 1L))
+        assertThatThrownBy(() -> underTestService.deleteProduct(-1L, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(ProductNotFoundException.class)
                 .hasMessageContaining(ErrorConstants.PRODUCT_NOT_FOUND_MSG);
@@ -385,7 +394,7 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
 
         User user2 = User.builder()
                 .firstName("firstName")
@@ -394,23 +403,24 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
 
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser1.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
+
         // when
         // then
-        assertThatThrownBy(() -> underTestService.deleteProduct(1L, 2L))
+        assertThatThrownBy(() -> underTestService.deleteProduct(savedComputer.getId(), savedUser2.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(AuthException.class)
                 .hasMessageContaining(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
@@ -426,7 +436,8 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
+
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -434,31 +445,34 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser1.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
+
         CreditCard card = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                  true,
-                2L
+                savedUser2.getId()
         );
         paymentRepository.save(card);
-        // when
-        underTestService.buyProduct(1L, 2L);
 
-        Product productAfter = productRepository.findById(1L)
+        // when
+        underTestService.buyProduct(savedComputer.getId(), savedUser2.getId());
+
+        Product productAfter = productRepository.findById(savedComputer.getId())
                 .orElse(null);
         // then
         assert productAfter != null;
@@ -475,7 +489,8 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
+
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -483,23 +498,25 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser1.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
+
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.buyProduct(1L, 2L))
+        assertThatThrownBy(() -> underTestService.buyProduct(savedComputer.getId(), savedUser2.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(NoActiveCardFoundException.class)
                 .hasMessageContaining(ErrorConstants.SET_AN_ACTIVE_CARD_MSG);
@@ -508,17 +525,18 @@ class ProductServiceTest {
     @Test
     void itShouldThrow_buyProduct_ProductDoesNotExist() {
         // given
-        User user1 = User.builder()
+        User user = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
                 .email("someemail@gmail.com")
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser = userRepository.save(user);
+
         // when
         // then
-        assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
+        assertThatThrownBy(() -> underTestService.buyProduct(1L, savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(ProductNotFoundException.class)
                 .hasMessageContaining(ErrorConstants.PRODUCT_NOT_FOUND_MSG);
@@ -545,23 +563,24 @@ class ProductServiceTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
 
         // when
         // then
-        assertThatThrownBy(() -> underTestService.buyProduct(1L, 1L))
+        assertThatThrownBy(() -> underTestService.buyProduct(savedComputer.getId(), savedUser.getId()))
                 .isInstanceOf(RuntimeException.class)
                 .isInstanceOf(CanNotBuyOwnProductExeption.class)
                 .hasMessageContaining(ErrorConstants.CANNOT_BUY_YOUR_OWN_PRODUCT_MSG);

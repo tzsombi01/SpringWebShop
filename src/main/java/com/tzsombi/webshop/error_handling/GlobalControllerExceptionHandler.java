@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.error_handling;
 
+import com.tzsombi.webshop.exceptions.ProductNotFoundException;
 import com.tzsombi.webshop.exceptions.StateMisMatchException;
 import com.tzsombi.webshop.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(StateMisMatchException.class)
     public ResponseEntity<ApiError> handleStateMisMatchException(StateMisMatchException exception, WebRequest request) {
+        return checkExceptions(exception, request);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ApiError> handleProductNotFoundException(ProductNotFoundException exception, WebRequest request) {
         return checkExceptions(exception, request);
     }
 

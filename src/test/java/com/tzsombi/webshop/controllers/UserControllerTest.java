@@ -1,10 +1,12 @@
 package com.tzsombi.webshop.controllers;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,7 +24,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class UserControllerTest {
+class UserControllerTest extends AbstractTestContainer {
 
     public static final String baseEndpointUrl = "/api/v1/users";
 
@@ -41,6 +43,11 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+    }
+
     @Test
     void itShould_getUserById() throws Exception {
         // given
@@ -56,16 +63,16 @@ class UserControllerTest {
                 .password(password)
                 .role(role)
                 .build();
-        userRepository.save(user);
-        String expected = "" +
-                "{\"firstName\":\"firstName\"," +
+        User savedUser = userRepository.save(user);
+
+        String expected = "{\"firstName\":\"firstName\"," +
                 "\"lastName\":\"lastName\"," +
                 "\"email\":\"someemail@gmail.com\"," +
                 "\"sellingProducts\":[],\"role\":\"USER\"}";
         // when
         String token = jwtService.generateToken(user);
         // then
-        MvcResult result = mockMvc.perform(get(baseEndpointUrl + "/{userId}", 1L)
+        MvcResult result = mockMvc.perform(get(baseEndpointUrl + "/{userId}", savedUser.getId())
                         .header("authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andReturn();
 
@@ -87,27 +94,26 @@ class UserControllerTest {
                 .password(password)
                 .role(role)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         String expectedFirstName = "anotherFirstName";
         String expectedLastName = "anotherLastName";
         String expectedEmail = "someemail2@gmail.com";
         String expectedPassword = "anotherPw";
-        String inputDto = "" +
-                "{\"firstName\":\"anotherFirstName\"," +
+        String inputDto = "{\"firstName\":\"anotherFirstName\"," +
                 "\"lastName\":\"anotherLastName\"," +
                 "\"email\":\"someemail2@gmail.com\"," +
                 "\"password\":\"anotherPw\"}";
         String token = jwtService.generateToken(user);
 
         // when
-        MvcResult result = mockMvc.perform(put(baseEndpointUrl + "/update/{userId}", 1L)
+        MvcResult result = mockMvc.perform(put(baseEndpointUrl + "/update/{userId}", savedUser.getId())
                         .header("authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(inputDto))
                 .andExpect(status().isOk()).andReturn();
 
-        User userAfter = userRepository.findById(1L)
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
         String expectedToken = jwtService.generateToken(userAfter);
         // then
@@ -134,15 +140,16 @@ class UserControllerTest {
                 .password(password)
                 .role(role)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         // when
         String token = jwtService.generateToken(user);
 
-        mockMvc.perform(delete(baseEndpointUrl + "/delete/{userId}", 1L)
+        mockMvc.perform(delete(baseEndpointUrl + "/delete/{userId}", savedUser.getId())
                         .header("authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andReturn();
 
-        User userAfter = userRepository.findById(1L)
+        User userAfter = userRepository.findById(savedUser.getId())
                 .orElse(null);
         // then
         assertThat(userAfter).isNull();

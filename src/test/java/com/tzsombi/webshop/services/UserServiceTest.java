@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.services;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.auth.AuthenticationResponse;
 import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.constants.ErrorConstants;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class UserServiceTest {
+class UserServiceTest extends AbstractTestContainer {
 
     private UserService underTestService;
 
@@ -43,6 +44,7 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         underTestService = new UserService(userRepository, userResponseDTOMapper, passwordEncoder, jwtService);
+        userRepository.deleteAll();
     }
 
     @Test

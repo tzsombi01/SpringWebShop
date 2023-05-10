@@ -1,5 +1,6 @@
 package com.tzsombi.webshop.controllers;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.models.CreditCard;
 import com.tzsombi.webshop.models.Role;
@@ -7,6 +8,7 @@ import com.tzsombi.webshop.models.User;
 import com.tzsombi.webshop.repositories.PaymentRepository;
 import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = FixedClockConfig.class)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class PaymentControllerTest {
+class PaymentControllerTest extends AbstractTestContainer {
 
     public static final String baseEndpointUrl = "/api/v1/payments";
 
@@ -47,6 +49,13 @@ class PaymentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        paymentRepository.deleteAll();
+    }
+
     @Test
     void itShould_getCard() throws Exception {
         // given
@@ -57,22 +66,23 @@ class PaymentControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard card = new CreditCard(
                 "5555555555554444\n",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(card);
+        CreditCard savedCard = paymentRepository.save(card);
 
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(get(baseEndpointUrl + "/retrieve/{cardId}", 1L)
+        mockMvc.perform(get(baseEndpointUrl + "/retrieve/{cardId}", savedCard.getId())
                         .header("authorization", "Bearer " + token)
-                        .param("userId", "1"))
+                        .param("userId", savedUser.getId().toString()))
                 .andExpect(status().isOk());
     }
 
@@ -86,7 +96,8 @@ class PaymentControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         String expiryDate = String.valueOf(YearMonth.from(ZonedDateTime.now(clock)));
         String inputCardAsString = String.format("{" +
                 "\"cardNumber\": \"5555555555554444\", " +
@@ -97,7 +108,7 @@ class PaymentControllerTest {
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(post(baseEndpointUrl + "/register/{userId}", 1L)
+        mockMvc.perform(post(baseEndpointUrl + "/register/{userId}", savedUser.getId())
                         .header("authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(inputCardAsString))
@@ -114,21 +125,23 @@ class PaymentControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard card = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(card);
+        CreditCard savedCard = paymentRepository.save(card);
+
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(delete(baseEndpointUrl + "/delete/{cardId}", 1L)
+        mockMvc.perform(delete(baseEndpointUrl + "/delete/{cardId}", savedCard.getId())
                         .header("authorization", "Bearer " + token)
-                        .param("userId", "1"))
+                        .param("userId", savedUser.getId().toString()))
                 .andExpect(status().isOk());
     }
 
@@ -142,15 +155,17 @@ class PaymentControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         CreditCard card = new CreditCard(
                 "5555555555554444",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                1L
+                savedUser.getId()
         );
-        paymentRepository.save(card);
+        CreditCard savedCard = paymentRepository.save(card);
+
         String expiryDate = String.valueOf(YearMonth.from(ZonedDateTime.now(clock)).plusMonths(1));
         String inputCardAsString = String.format("{" +
                 "\"cardNumber\": \"4111111111111111\", " +
@@ -161,9 +176,9 @@ class PaymentControllerTest {
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(put(baseEndpointUrl + "/update/{cardId}", 1L)
+        mockMvc.perform(put(baseEndpointUrl + "/update/{cardId}", savedCard.getId())
                         .header("authorization", "Bearer " + token)
-                        .param("userId", "1")
+                        .param("userId", savedUser.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(inputCardAsString))
                 .andExpect(status().isOk());

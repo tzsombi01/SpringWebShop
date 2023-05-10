@@ -1,10 +1,12 @@
 package com.tzsombi.webshop.controllers;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.auth.JwtService;
 import com.tzsombi.webshop.models.*;
 import com.tzsombi.webshop.repositories.PaymentRepository;
 import com.tzsombi.webshop.repositories.ProductRepository;
 import com.tzsombi.webshop.repositories.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,7 +38,7 @@ class FixedClockConfig {
 @SpringBootTest(classes = FixedClockConfig.class)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ProductControllerTest {
+class ProductControllerTest extends AbstractTestContainer {
 
     public static final String baseEndpointUrl = "/api/v1/products";
 
@@ -58,6 +60,13 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        paymentRepository.deleteAll();
+    }
+
     @Test
     void itShould_getAllProducts() throws Exception {
         // given
@@ -68,29 +77,32 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         Phone phone = new Phone(
                 "iPhone 6",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 4,
                 "Apple",
                 PhoneOperatingSystem.IOS,
                 Color.BLACK);
-        productRepository.save(phone);
+        Phone savedProduct = productRepository.save(phone);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedCard = productRepository.save(computer);
+
         String token = jwtService.generateToken(user);
         // when
         // then
@@ -113,22 +125,23 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
-        String rawProductInput = "{" +
+        User savedUser = userRepository.save(user);
+
+        String rawProductInput = String.format("{" +
                 "\"type\": \"Phone\", " +
                 "\"name\": \"Galaxy A5\", " +
                 "\"price\": \"500.50\", " +
                 "\"description\": \"Some description\", " +
-                "\"sellerId\": 1, " +
+                "\"sellerId\": %s, " +
                 "\"ramInGb\": 4, " +
                 "\"manufacturer\": \"Asus\", " +
                 "\"system\": \"ios\"," +
                 "\"color\": \"gold\"" +
-                "}";
+                "}", savedUser.getId());
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(post(baseEndpointUrl + "/add/{sellerId}", 1L)
+        mockMvc.perform(post(baseEndpointUrl + "/add/{sellerId}", savedUser.getId())
                         .header("authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(rawProductInput))
@@ -145,19 +158,20 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
 
         String requestDTOasString = "{" +
                 "\"name\": \"Galaxy A6\", " +
@@ -168,7 +182,7 @@ class ProductControllerTest {
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(put(baseEndpointUrl + "/update/{sellerId}", 1L)
+        mockMvc.perform(put(baseEndpointUrl + "/update/{productId}", savedComputer.getId())
                         .header("authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestDTOasString))
@@ -185,7 +199,8 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user1);
+        User savedUser1 = userRepository.save(user1);
+
         User user2 = User.builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -193,34 +208,36 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user2);
+        User savedUser2 = userRepository.save(user2);
+
         CreditCard card = new CreditCard(
                 "1234-5678-1234-5678",
                 YearMonth.from(ZonedDateTime.now(clock)),
                 "FirstName LastName",
                 true,
-                2L
+                savedUser2.getId()
         );
-        paymentRepository.save(card);
+        CreditCard savedCard = paymentRepository.save(card);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser1.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
 
         String token = jwtService.generateToken(user2);
         // when
         // then
-        mockMvc.perform(post(baseEndpointUrl + "/buy/{productId}", 1L)
+        mockMvc.perform(post(baseEndpointUrl + "/buy/{productId}", savedComputer.getId())
                         .header("authorization", "Bearer " + token)
-                        .param("userId", "2"))
+                        .param("userId", savedUser2.getId().toString()))
                 .andExpect(status().isAccepted());
     }
 
@@ -234,26 +251,27 @@ class ProductControllerTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
         Computer computer = new Computer(
                 "Dell G3 15 3500",
                 new BigDecimal(100_000),
                 "Some description",
-                1L,
+                savedUser.getId(),
                 GpuType.MSI_GeForce_RTX_3070,
                 CpuType.AMD_RYZEN_6_6980HX,
                 16,
                 "Dell",
                 Color.WHITE,
                 ComputerOperatingSystem.WINDOWS);
-        productRepository.save(computer);
+        Computer savedComputer = productRepository.save(computer);
 
         String token = jwtService.generateToken(user);
         // when
         // then
-        mockMvc.perform(delete(baseEndpointUrl + "/delete/{productId}", 1L)
+        mockMvc.perform(delete(baseEndpointUrl + "/delete/{productId}", savedComputer.getId())
                         .header("authorization", "Bearer " + token)
-                        .param("sellerId", "1"))
+                        .param("sellerId", savedUser.getId().toString()))
                 .andExpect(status().isOk());
     }
 }

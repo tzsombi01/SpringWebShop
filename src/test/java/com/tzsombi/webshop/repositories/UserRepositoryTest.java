@@ -1,28 +1,34 @@
 package com.tzsombi.webshop.repositories;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class UserRepositoryTest {
+@SpringBootTest
+class UserRepositoryTest extends AbstractTestContainer {
 
     @Autowired
     private UserRepository underTestUserRepository;
 
+    @BeforeEach
+    void setup() {
+        underTestUserRepository.deleteAll();
+    }
 
     @Test
     void itShould_findByEmail_ExistingEmail() {
         // given
         String email = "someemail@gmail.com";
-        User expectedUser = User
+        User user = User
                 .builder()
                 .firstName("firstName")
                 .lastName("lastName")
@@ -30,14 +36,14 @@ class UserRepositoryTest {
                 .password("password")
                 .role(Role.USER)
                 .build();
-        underTestUserRepository.save(expectedUser);
+        User expected = underTestUserRepository.save(user);
 
         // when
         User foundUser = underTestUserRepository.findByEmail(email)
                 .orElse(null);
 
         // then
-        assertThat(expectedUser).isEqualTo(foundUser);
+        assertThat(foundUser).isEqualTo(expected);
     }
 
     @Test
@@ -60,7 +66,7 @@ class UserRepositoryTest {
                 .orElse(null);
 
         // then
-        assertThat(foundUser).isEqualTo(null);
+        assertThat(foundUser).isNull();
     }
 
     @Test

@@ -19,11 +19,11 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Page<Product>> getAllProducts(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "5") Integer numberOfProductsPerPage,
-            @RequestParam(defaultValue = "true") Boolean isOrderAsc,
+            @RequestParam(defaultValue = "5") Integer pageSize,
+            @RequestParam(defaultValue = "true") Boolean order,
             @RequestParam(defaultValue = "name") String sortBy
-            ) {
-        Page<Product> products = productService.getAllProducts(page, numberOfProductsPerPage, sortBy, isOrderAsc);
+        ) {
+        Page<Product> products = productService.getAllProducts(page, pageSize, sortBy, order);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

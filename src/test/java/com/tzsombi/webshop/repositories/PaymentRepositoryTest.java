@@ -1,29 +1,32 @@
 package com.tzsombi.webshop.repositories;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.models.CreditCard;
 import com.tzsombi.webshop.models.Role;
 import com.tzsombi.webshop.models.User;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.YearMonth;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class PaymentRepositoryTest {
+@SpringBootTest
+class PaymentRepositoryTest extends AbstractTestContainer {
 
     @Autowired
     private PaymentRepository underTestRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+        underTestRepository.deleteAll();
+    }
 
     @Test
     void itShould_findActiveCardUnderUserById_ExistingUserAndCard() {
@@ -68,10 +71,10 @@ class PaymentRepositoryTest {
         User savedUser = userRepository.save(user);
 
         // when
-        CreditCard foundCard = underTestRepository.findActiveCardUnderUserById(1L)
+        CreditCard foundCard = underTestRepository.findActiveCardUnderUserById(savedUser.getId())
                 .orElse(null);
         // then
-        assertThat(foundCard).isEqualTo(null);
+        assertThat(foundCard).isNull();
     }
 
     @Test
@@ -100,7 +103,7 @@ class PaymentRepositoryTest {
                 .orElse(null);
 
         // then
-        assertThat(foundCard).isEqualTo(null);
+        assertThat(foundCard).isNull();
     }
 
     @Test

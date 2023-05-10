@@ -31,7 +31,7 @@ public class ProductService {
     }
 
     public void addProduct(String rawProduct, Long sellerId) {
-        User user = userRepository.findById(sellerId)
+        userRepository.findById(sellerId)
                 .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(sellerId)));
 
         Product product = ProductFactory.makeProduct(rawProduct);
@@ -41,7 +41,7 @@ public class ProductService {
 
     public void updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> ProductNotFoundException.of(ErrorCode.PRODUCT_NOT_FOUND));
 
         String type = productRepository.findProductTypeById(productId);
 
@@ -142,7 +142,7 @@ public class ProductService {
                 .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(sellerId)));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> ProductNotFoundException.of(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (user.getSellingProducts().stream().noneMatch(prod -> prod.getId().equals(productId))) {
             throw new AuthException(ErrorConstants.NO_PERMISSION_TO_MODIFY_PRODUCT_MSG);
@@ -158,7 +158,7 @@ public class ProductService {
                 .orElseThrow(() -> UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(ErrorConstants.PRODUCT_NOT_FOUND_MSG));
+                .orElseThrow(() -> ProductNotFoundException.of(ErrorCode.PRODUCT_NOT_FOUND));
 
         CredentialChecker.ifSellerAndBuyerIsTheSameThrowException(product, user);
 

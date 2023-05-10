@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     USER_NOT_FOUND(ErrorConstants.USER_NOT_FOUND_MSG, HttpStatus.NOT_FOUND),
-    STATE_MISMATCH(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG, HttpStatus.CONFLICT);
+    STATE_MISMATCH(ErrorConstants.ERROR_OCCURRED_WHEN_SETTING_THE_CARD_MSG, HttpStatus.CONFLICT),
+    PRODUCT_NOT_FOUND(ErrorConstants.PRODUCT_NOT_FOUND_MSG, HttpStatus.NOT_FOUND);
 
     private final String message;
 

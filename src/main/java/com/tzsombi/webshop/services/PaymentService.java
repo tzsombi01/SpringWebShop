@@ -53,7 +53,7 @@ public class PaymentService {
 
         CreditCardValidator.validateCardByVendor(creditCard);
 
-        if (creditCard.getIsActive() && user.getCards().stream().anyMatch(CreditCard::getIsActive)) {
+        if (Boolean.TRUE.equals(creditCard.getIsActive()) && user.getCards().stream().anyMatch(CreditCard::getIsActive)) {
             CreditCard previouslyActiveCard = paymentRepository.findActiveCardUnderUserById(userId)
                     .orElseThrow(() ->
                             StateMisMatchException.ofCode(ErrorCode.STATE_MISMATCH));

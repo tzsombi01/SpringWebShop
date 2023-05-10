@@ -1,10 +1,14 @@
 package com.tzsombi.webshop.repositories;
 
+import com.tzsombi.webshop.AbstractTestContainer;
 import com.tzsombi.webshop.models.*;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
@@ -12,15 +16,20 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ProductRepositoryTest {
+@SpringBootTest
+class ProductRepositoryTest extends AbstractTestContainer {
 
     @Autowired
     private ProductRepository underTestRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+        underTestRepository.deleteAll();
+    }
 
     @Test
     void itShould_findProductTypeById_ExistingProduct() {
@@ -67,9 +76,9 @@ class ProductRepositoryTest {
         User savedUser = userRepository.save(user);
 
         // when
-        String type = underTestRepository.findProductTypeById(1L);
+        String type = underTestRepository.findProductTypeById(savedUser.getId());
 
         // then
-        assertThat(type).isEqualTo(null);
+        assertThat(type).isNull();
     }
 }

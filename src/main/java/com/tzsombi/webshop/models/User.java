@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -91,19 +92,24 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void addProduct(Product product) {
-        sellingProducts.add(product);
-    }
-
     public void deleteProduct(Product product) {
         sellingProducts.remove(product);
     }
 
-    public void addCard(CreditCard creditCard) {
-        cards.add(creditCard);
-    }
-
     public void deleteCard(CreditCard creditCard) {
         cards.remove(creditCard);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && role == user.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, password, email, sellingProducts, cards, role);
     }
 }

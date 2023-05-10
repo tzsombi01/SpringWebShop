@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.YearMonth;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -45,5 +46,18 @@ public class CreditCard {
         this.fullName = fullName;
         this.isActive = isActive;
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CreditCard that = (CreditCard) o;
+        return Objects.equals(id, that.id) && Objects.equals(cardNumber, that.cardNumber) && Objects.equals(expiryDate, that.expiryDate) && Objects.equals(fullName, that.fullName) && Objects.equals(isActive, that.isActive) && Objects.equals(userId, that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cardNumber, expiryDate, fullName, isActive, userId);
     }
 }

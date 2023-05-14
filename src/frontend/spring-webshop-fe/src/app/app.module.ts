@@ -7,6 +7,10 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { ProductsComponent } from './products/products.component';
+import { UserService } from './services/user.service';
+import { ProductService } from './services/product.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -19,9 +23,14 @@ import { ProductsComponent } from './products/products.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatPaginatorModule
   ],
-  providers: [],
+  providers: [
+    UserService,
+    ProductService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

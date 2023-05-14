@@ -1,6 +1,17 @@
 <div class="header">
   <img class="main-logo" [src]="webshopLogoUrl" alt="Webshop's logo">
-  <input class="search-bar" type="text">
+
+  <div class="inner-search">
+    <button type="submit" class="search-button" (click)="onSearch()">Search</button>
+    
+    <mat-paginator 
+      class="mat-paginator" 
+      [length]="getProductLength()"
+      [pageSize]="5" 
+      [pageSizeOptions]="[3, 5, 10]">
+    </mat-paginator>
+  </div>
+  
   <div class="user-data">
     <p>{{ user.name }}</p>
     <p>{{ user.email }}</p>

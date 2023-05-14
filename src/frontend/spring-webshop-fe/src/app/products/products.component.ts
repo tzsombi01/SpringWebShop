@@ -3,7 +3,6 @@ import { Product } from '../interfaces/product';
 import { ProductWrapper } from '../interfaces/productResponse';
 import { ProductService } from '../services/product.service';
 
-
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
@@ -11,20 +10,22 @@ import { ProductService } from '../services/product.service';
 })
 export class ProductsComponent implements OnInit {
 
-  products: Product[];
-
   constructor(private productService: ProductService) {
-    this.products = [];
   }
 
   ngOnInit(): void {
     this.getAllProducts();
   }
 
+  public getProducts(): Product[] {
+    return this.productService.getProducts();
+  }
+
   private getAllProducts(): void {
     this.productService.getAllProducts().subscribe(
       (response: ProductWrapper) => {
-        this.products = response.content;
+        this.productService.products = response.content;
+        this.productService.productsChanged.emit(response.content);
       },
       (error: any) => console.error(error),
       () => console.log("Products retrieved")

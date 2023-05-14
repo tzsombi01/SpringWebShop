@@ -1,6 +1,5 @@
 <div class="product-container">
-    
-    <table class="product-table" *ngFor="let product of products; let i = index;">
+    <table class="product-table" *ngFor="let product of getProducts(); let i = index;">
         <caption *ngIf="i == 0" id="products-caption">Products of our webshop:</caption>
         <tr>
             <th>Product id</th>

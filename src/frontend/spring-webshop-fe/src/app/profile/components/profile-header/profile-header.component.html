@@ -1,0 +1,18 @@
+<div class="profile-header">
+    <nav>
+      <ul>
+        <li><a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a></li>
+        <li><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Profile</a></li>
+      </ul>
+    </nav>
+    
+    <div class="profile-user-data">
+      <p>{{ this.userService.getUserName() }}</p>
+      <p>{{ this.userService.getUserEmail() }}</p>
+      <img 
+        class="profile-user-profile-picture" 
+        [src]="this.userService.getUserProfilePictureUrl()" 
+        alt="Profile picture"
+      >
+    </div>
+  </div>

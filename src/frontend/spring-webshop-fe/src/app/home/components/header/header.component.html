@@ -1,0 +1,27 @@
+<div class="header">
+  <img class="main-logo" [src]="webshopLogoUrl" alt="Webshop's logo">
+
+  <nav>
+    <ul>
+      <li><a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a></li>
+      <li><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Profile</a></li>
+    </ul>
+  </nav>
+
+  <div class="inner-search">
+    <button type="submit" class="search-button" (click)="onSearch()">Search</button>
+    
+    <mat-paginator 
+      class="mat-paginator" 
+      [length]="getProductLength()"
+      [pageSize]="5" 
+      [pageSizeOptions]="[3, 5, 10]">
+    </mat-paginator>
+  </div>
+  
+  <div class="user-data">
+    <p>{{ this.userService.getUserName() }}</p>
+    <p>{{ this.userService.getUserEmail() }}</p>
+    <img class="user-profile-picture" [src]="this.userService.getUserProfilePictureUrl()" alt="Profile picture">
+  </div>
+</div>

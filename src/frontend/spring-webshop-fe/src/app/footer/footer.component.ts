@@ -12,7 +12,7 @@ export class FooterComponent {
   constructor() {
     // TODO: Read from disclaimer.txt
     this.lines = [
-      "This webshop weas created with Spring Boot + Angular",
+      "This webshop was created with Spring Boot + Angular",
       "Made by: Zsombor Toreky",
       new DOMParser().parseFromString("All rights reserved &copy", "text/html").body.textContent
     ];

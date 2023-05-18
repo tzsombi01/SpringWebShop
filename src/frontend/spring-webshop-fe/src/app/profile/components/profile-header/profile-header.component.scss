@@ -1,0 +1,16 @@
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    overflow: auto;
+    background-color: deepskyblue;
+    padding: 20px 10px;
+    gap: 8px;
+  }
+  
+  .user-profile-picture {
+    width: 160px;
+    align-self: center;
+    flex-grow: 1;
+  }
+  

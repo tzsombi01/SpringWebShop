@@ -12,7 +12,7 @@ import com.tzsombi.webshop.models.UserResponseDTO;
 import com.tzsombi.webshop.repositories.UserRepository;
 import com.tzsombi.webshop.utils.CredentialChecker;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +82,12 @@ public class UserService {
         if (! userRepository.existsById(userId)) {
             throw UserNotFoundException.ofUserId(ErrorCode.USER_NOT_FOUND, String.valueOf(userId));
         }
+
         userRepository.deleteById(userId);
+    }
+
+    public UserResponseDTO getMe() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userResponseDTOMapper.apply(user);
     }
 }

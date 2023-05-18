@@ -11,6 +11,7 @@ public class CreditCardResponseDTOMapper implements Function<CreditCard, CreditC
     @Override
     public CreditCardResponseDTO apply(CreditCard creditCard) {
         return new CreditCardResponseDTO(
+                creditCard.getId(),
                 creditCard.getCardNumber(),
                 creditCard.getExpiryDate(),
                 creditCard.getFullName(),

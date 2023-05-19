@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from  '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileHeaderComponent } from './profile/components/profile-header/profile-header.component';
 import { ProfileBodyComponent } from './profile/components/profile-body/profile-body.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { AuthService } from './services/auth.service';
 
 
 @NgModule({
@@ -27,18 +31,23 @@ import { ProfileBodyComponent } from './profile/components/profile-body/profile-
     HomeComponent,
     ProfileHeaderComponent,
     ProfileBodyComponent,
-    ProfileBodyComponent
+    ProfileBodyComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     UserService,
-    ProductService
+    ProductService,
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

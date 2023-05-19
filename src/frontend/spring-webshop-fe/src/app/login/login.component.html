@@ -1,0 +1,18 @@
+<div class="login-header">
+    <p class="title">Login</p>
+</div>
+
+<div class="login-form">
+    <p class="field-name">Email:</p>
+    <input #usernameField placeholder="Email address" type="text" [formControl]="userNameControl">
+    
+    <p class="field-name">Password:</p>
+    <div class="password-hide">
+        <input #passwordField placeholder="Password" type="text" [formControl]="passwordControl" [type]="hide ? 'password' : 'text'">
+        <button class="hide-button" (click)="hide = !hide">{{hide ? 'hide' : 'show'}}</button>
+    </div>
+
+    <button class="submit-button" (click)="login()">Submit login</button>
+</div>
+
+<app-footer></app-footer>

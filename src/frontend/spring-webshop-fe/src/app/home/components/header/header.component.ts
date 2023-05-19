@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   Component,
   OnDestroy,
-  OnInit,
   ViewChild
 } from '@angular/core';
 import { UserService } from "../../../services/user.service";
@@ -17,7 +16,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
+export class HeaderComponent implements AfterViewInit, OnDestroy {
   readonly webshopLogoUrl: string;
 
   @ViewChild(MatPaginator)
@@ -28,30 +27,26 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webshopLogoUrl = "assets/img/webshop_logo.jpg";
   }
 
-  ngOnInit(): void {
-    this.userService.getUsersData();
-  }
-
   ngAfterViewInit(): void {
-      this.paginatorSubscription = this.paginator.page
-        .pipe(
-          tap(() => this.onSearch())
-        )
-        .subscribe();
+    this.paginatorSubscription = this.paginator.page
+      .pipe(
+        tap(() => this.onSearch())
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
-      this.paginatorSubscription.unsubscribe();
+    this.paginatorSubscription.unsubscribe();
   }
 
   public getProductLength(): number {
-      return this.productService.getProducts().length;
+    return this.productService.getProducts().length;
   }
 
   public onSearch() {
     this.productService.getAllProducts(
         this.paginator?.pageIndex ?? 0,
-        this.paginator?.pageSize ?? 2).subscribe(
+        this.paginator?.pageSize ?? 10).subscribe(
       (response: ProductWrapper) => {
         this.productService.products = response.content;
         this.productService.productsChanged.emit(response.content);

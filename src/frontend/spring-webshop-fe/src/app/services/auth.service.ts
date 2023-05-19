@@ -1,0 +1,42 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { TokenResponse } from '../interfaces/tokenResponse';
+import { Observable } from 'rxjs/internal/Observable';
+import { UserService } from './user.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  
+  private readonly urlToAuthenticationEndpoint: string;
+  private readonly urlToRegisterEndpoint: string;
+  private token!: string;
+
+  constructor(private http: HttpClient, private userService: UserService) { 
+    this.urlToAuthenticationEndpoint = "http://localhost:8080/api/v1/auth/authenticate";
+    this.urlToRegisterEndpoint = "http://localhost:8080/api/v1/auth/register";
+  }
+
+  public login(userName: string, password: string): void {
+    const body = { email: userName, password: password }
+    this.authenticate(body).subscribe(
+      (response: TokenResponse) => {
+        this.token = response.token;
+        this.userService.me(this.token);
+      },
+      (error: any) => {
+        alert("Email and / or password are incorrect");
+        console.log(error);
+      },
+      () => console.log("User Logged In"));
+  }
+
+  private authenticate(body: Object): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(this.urlToAuthenticationEndpoint, body);
+  }
+
+  public getToken(): string | undefined {
+    return this.token;
+  }
+}

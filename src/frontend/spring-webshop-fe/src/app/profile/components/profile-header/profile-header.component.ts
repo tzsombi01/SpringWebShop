@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -6,12 +6,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './profile-header.component.html',
   styleUrls: ['./profile-header.component.scss']
 })
-export class ProfileHeaderComponent implements OnInit {
+export class ProfileHeaderComponent {
   constructor(protected userService: UserService) { }
 
-  ngOnInit(): void {
-    this.userService.getUsersData();
-  }
-
-  
 }

@@ -4,13 +4,11 @@
   <nav>
     <ul>
       <li><a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a></li>
-      <li><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Profile</a></li>
+      <li *ngIf="this.userService.isUserLoggedIn()"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Profile</a></li>
     </ul>
   </nav>
 
   <div class="inner-search">
-    <button type="submit" class="search-button" (click)="onSearch()">Search</button>
-    
     <mat-paginator 
       class="mat-paginator" 
       [length]="getProductLength()"
@@ -19,9 +17,14 @@
     </mat-paginator>
   </div>
   
-  <div class="user-data">
+  <div class="user-data" *ngIf="this.userService.isUserLoggedIn()">
     <p>{{ this.userService.getUserName() }}</p>
     <p>{{ this.userService.getUserEmail() }}</p>
     <img class="user-profile-picture" [src]="this.userService.getUserProfilePictureUrl()" alt="Profile picture">
+  </div>
+
+  <div class="user-data" *ngIf="! this.userService.isUserLoggedIn()">
+    <p><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a></p>
+    <p><a routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">Register</a></p>
   </div>
 </div>

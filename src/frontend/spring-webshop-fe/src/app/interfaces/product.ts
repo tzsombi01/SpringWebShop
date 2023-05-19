@@ -11,4 +11,5 @@ export interface Product {
     system?: string,
     gpu?: string,
     cpu?: string
+    type?: string
 }

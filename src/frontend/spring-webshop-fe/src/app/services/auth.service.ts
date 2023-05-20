@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { TokenResponse } from '../interfaces/tokenResponse';
 import { Observable } from 'rxjs/internal/Observable';
 import { UserService } from './user.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class AuthService {
   
   private readonly urlToAuthenticationEndpoint: string;
   private readonly urlToRegisterEndpoint: string;
+  private readonly BASE_URL: string | undefined = environment.BASE_URL;
   private token!: string;
 
   constructor(private http: HttpClient, private userService: UserService) { 

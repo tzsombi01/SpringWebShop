@@ -2,13 +2,14 @@
 
 ---
 
-### Project in Java Spring about a sample webshop.
+### Project in Java Spring and Angular implementing a webshop / e-commerce site.
 
 ---
 
 In this project you can see a small working webshop, which was purely created as a personal side project. 
 
 I'm trying to use the available best practices and implement as much **new** stuff as possible.
+
 
 ---
 

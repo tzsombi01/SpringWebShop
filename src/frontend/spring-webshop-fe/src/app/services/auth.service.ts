@@ -10,14 +10,15 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthService {
   
+  private readonly BASE_URL: string | undefined = environment.BASE_URL;
   private readonly urlToAuthenticationEndpoint: string;
   private readonly urlToRegisterEndpoint: string;
-  private readonly BASE_URL: string | undefined = environment.BASE_URL;
+
   private token!: string;
 
   constructor(private http: HttpClient, private userService: UserService) { 
-    this.urlToAuthenticationEndpoint = "http://localhost:8080/api/v1/auth/authenticate";
-    this.urlToRegisterEndpoint = "http://localhost:8080/api/v1/auth/register";
+    this.urlToAuthenticationEndpoint = "/api/v1/auth/authenticate";
+    this.urlToRegisterEndpoint = "/api/v1/auth/register";
   }
 
   public login(userName: string, password: string): void {
@@ -35,7 +36,7 @@ export class AuthService {
   }
 
   private authenticate(body: Object): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(this.urlToAuthenticationEndpoint, body);
+    return this.http.post<TokenResponse>(this.BASE_URL + this.urlToAuthenticationEndpoint, body);
   }
 
   public getToken(): string | undefined {

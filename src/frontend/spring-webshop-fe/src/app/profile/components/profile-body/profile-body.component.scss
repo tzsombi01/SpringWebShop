@@ -1,0 +1,29 @@
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    margin: 30px;
+    align-items: stretch;
+
+    .choosing-buttons {
+        align-self: center;
+        
+        .sellingproductsbutton, .creditcardsbutton {
+            margin: 20px;
+            font-size: 20px;
+            background-color: whitesmoke;
+            border-radius: 10%;
+        }
+    }
+
+    .selling-products, .credit-cards {
+        width: 100%;
+        border: 8px solid;
+        border-style: groove;
+    }
+    
+    .caption {
+        font-size: 36px;
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+}

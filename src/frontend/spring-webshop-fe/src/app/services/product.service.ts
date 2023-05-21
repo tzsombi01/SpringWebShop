@@ -3,18 +3,21 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductWrapper } from '../interfaces/productResponse';
 import { Product } from '../interfaces/product';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
+  private readonly BASE_URL: string = environment.BASE_URL;
   private readonly urlToAllProductsEndp: string;
+
   products: Product[];
   productsChanged: EventEmitter<Product[]> = new EventEmitter<Product[]>();
 
   constructor(private http: HttpClient) { 
-    this.urlToAllProductsEndp = "http://localhost:8080/api/v1/products";
+    this.urlToAllProductsEndp = "/api/v1/products";
     this.products = [];
   }
 
@@ -31,8 +34,8 @@ export class ProductService {
     
     let products: Observable<ProductWrapper> = this.http.get<ProductWrapper>(
       queryParams.length > 0 
-      ? `${ this.urlToAllProductsEndp }?${ queryParams.join("&") }`
-      : this.urlToAllProductsEndp
+      ? `${ this.BASE_URL + this.urlToAllProductsEndp }?${ queryParams.join("&") }`
+      : this.BASE_URL + this.urlToAllProductsEndp
     );
 
     return products;

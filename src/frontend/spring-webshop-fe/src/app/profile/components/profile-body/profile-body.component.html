@@ -1,1 +1,43 @@
-<p>profile-body works!</p>
+<div class="profile-details">
+    <div class="choosing-buttons">
+        <button class="sellingproductsbutton" (click)="setDisplayCategory('sellingProducts')">My Products</button>
+        <button class="creditcardsbutton" (click)="setDisplayCategory('creditCards')">My Credit Cards</button>
+    </div>
+
+    <div *ngIf="displayCategory === 'sellingProducts'" class="profile-selling-products">
+        <table class="selling-products" *ngFor="let product of userService.user.sellingProducts; let i = index;">
+            <caption class="caption" *ngIf="i === 0">My products</caption>
+            <tr>
+                <th>Product id</th>
+                <th>Product name</th>
+                <th>Product price</th>
+                <th>Product description</th>
+                <th>Product sellerId</th>
+            </tr>
+            <th> {{ product.id }} </th>
+            <th> {{ product.name }} </th>
+            <th> {{ product.price | currency: "USD" }} </th>
+            <th> {{ product.description ?? "Description was not provided"}} </th>
+            <th> {{ product.sellerId }} </th>
+        </table>
+    </div>
+
+    <div *ngIf="displayCategory === 'creditCards'" class="profile-credit-cards">
+        <table class="credit-cards" *ngFor="let card of userService.user.creditCards; let i = index;">
+            <caption class="caption" *ngIf="i === 0">Credit Cards</caption>
+            <tr>
+                <th>Card id</th>
+                <th>Card Number</th>
+                <th>Expiry Date</th>
+                <th>Full Name</th>
+                <th>Type</th>
+                <th>Active</th>
+            </tr>
+            <th> {{ card.id }} </th>
+            <th> {{ card.cardNumber }} </th>
+            <th> {{ card.expiryDate | date: "MMM, y" }}</th>
+            <th> {{ card.type }} </th>
+            <th> {{ card.isActive ? "Yes" : "No" }} </th>
+        </table>
+    </div>
+</div>

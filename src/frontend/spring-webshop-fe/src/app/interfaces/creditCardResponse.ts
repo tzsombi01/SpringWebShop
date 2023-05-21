@@ -1,7 +1,7 @@
 export interface CreditCardResponse {
     id: number,
     cardNumber: number,
-    expiryDate?: Array<Date>,
+    expiryDate: Date,
     fullName: string,
     type: string,
     isActive: boolean

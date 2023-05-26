@@ -1,0 +1,46 @@
+.register-header {
+    display: flex;
+    background-color: deepskyblue;
+    justify-content: center;
+
+    .title {
+        font-size: 40px;
+    }
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .field-name {
+        font-size: 17px;
+    }
+
+    input {
+        font-size: 17px;
+    }
+
+    .password-hide {
+        display: flex;
+        gap: 10px;
+
+        .hide-button {
+            font-size: 17px;
+            border-radius: 9%;
+        }
+    }
+    
+    .submit-button {
+        width: 180px;
+        font-size: 17px;
+        border-radius: 6%;
+    }
+
+    .alert {
+        color: darkred;
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+}

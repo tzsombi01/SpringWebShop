@@ -39,6 +39,23 @@ export class AuthService {
     return this.http.post<TokenResponse>(this.BASE_URL + this.urlToAuthenticationEndpoint, body);
   }
 
+  public register(firstName: string, lastName: string, email: string, password: string): void {
+    const body = { firstName: firstName, lastName: lastName, email: email, password: password };
+    this.registerUser(body).subscribe(
+      (response: TokenResponse) => {
+        this.token = response.token;
+        this.userService.me(this.token);
+      },
+      (error: any) => {
+        console.log(error);
+      },
+      () => console.log("Registered Successfully"));
+  }
+
+  private registerUser(body: Object): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(this.BASE_URL + this.urlToRegisterEndpoint, body);
+  }
+
   public getToken(): string | undefined {
     return this.token;
   }

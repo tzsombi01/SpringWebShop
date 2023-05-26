@@ -1,3 +1,39 @@
+<div class="register-header">
+    <p class="title">Register</p>
+</div>
 
+<form #register="ngForm" class="register-form" (ngSubmit)="submit(register, firstName, lastName, email, password)">
+    <label class="field-name">First Name:</label>
+    <input #firstName="ngModel" required minlength="4" maxlength="20" placeholder="John" type="text" name="firstName" ngModel>
+    <div *ngIf="firstName.touched && firstName.invalid" class="alert">
+        <p *ngIf="firstName.errors?.['required']">First Name is required</p>
+        <p *ngIf="firstName.errors?.['minlength']">First Name must be at least 4 characters long</p>
+    </div>
+
+    <label class="field-name">Last Name:</label>
+    <input #lastName="ngModel" required minlength="4" maxlength="20" placeholder="Doe" type="text" name="lastName" ngModel>
+    <div *ngIf="lastName.touched && lastName.invalid" class="alert">
+        <p *ngIf="lastName.errors?.['required']">Last Name is required</p>
+        <p *ngIf="lastName.errors?.['minlength']">Last Name must be at least 4 characters long</p>
+    </div>
+    
+    <label class="field-name">Email:</label>
+    <input #email="ngModel" required placeholder="email@host.com" type="text" name="email" ngModel email>
+    <div *ngIf="email.touched && email.invalid" class="alert">
+        <p *ngIf="email.errors?.['email']">Invalid email address</p>
+    </div>
+
+    <label class="field-name">Password:</label>
+    <div class="password-hide">
+        <input #password="ngModel" required minlength="5" placeholder="Password" type="text" [type]="hide ? 'password' : 'text'" name="password" ngModel>
+        <button class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
+    </div>
+    <div *ngIf="password.touched && password.invalid" class="alert">
+        <p *ngIf="password.errors?.['required']">Last Name is required</p>
+        <p *ngIf="password.errors?.['minlength']">Last Name must be at least 5 characters long</p>
+    </div>
+    
+    <button class="submit-button" type="submit">Submit</button>
+</form>
 
 <app-footer></app-footer>

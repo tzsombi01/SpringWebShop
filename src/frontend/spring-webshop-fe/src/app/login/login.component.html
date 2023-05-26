@@ -9,7 +9,7 @@
     <p class="field-name">Password:</p>
     <div class="password-hide">
         <input #passwordField placeholder="Password" type="text" [formControl]="passwordControl" [type]="hide ? 'password' : 'text'">
-        <button class="hide-button" (click)="hide = !hide">{{hide ? 'hide' : 'show'}}</button>
+        <button class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
     </div>
 
     <button class="submit-button" (click)="login()">Submit login</button>

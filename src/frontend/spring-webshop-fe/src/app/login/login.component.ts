@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { UserService } from '../services/user.service';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -18,9 +17,9 @@ export class LoginComponent {
     this.hide = true;
   }
 
-  public login(): void {
+  public async login() {
     this.authService.login(this.userNameControl.value, this.passwordControl.value);
     
-    this.router.navigate(["/home"]);
+    await this.router.navigate(["/home"]);
   }
 }

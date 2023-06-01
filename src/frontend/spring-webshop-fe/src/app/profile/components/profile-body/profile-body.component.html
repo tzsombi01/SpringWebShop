@@ -4,8 +4,8 @@
         <button class="creditcardsbutton" (click)="setDisplayCategory('creditCards')">My Credit Cards</button>
     </div>
 
-    <div *ngIf="displayCategory === 'sellingProducts'" class="profile-selling-products">
-        <table class="selling-products" *ngFor="let product of userService.user.sellingProducts; let i = index;">
+    <div *ngIf="displayCategory === 'sellingProducts' && ! productsAreEmpty()" class="profile-selling-products">
+        <table class="selling-products" *ngFor="let product of getProducts(); let i = index;">
             <caption class="caption" *ngIf="i === 0">My products</caption>
             <tr>
                 <th>Product id</th>
@@ -22,8 +22,12 @@
         </table>
     </div>
 
-    <div *ngIf="displayCategory === 'creditCards'" class="profile-credit-cards">
-        <table class="credit-cards" *ngFor="let card of userService.user.creditCards; let i = index;">
+    <div *ngIf="displayCategory === 'sellingProducts' && productsAreEmpty()" class="no-product-container">
+        <p class="no-product-text">No products are for sale!</p>
+    </div>
+
+    <div *ngIf="displayCategory === 'creditCards' && ! creditCardsAreEmpty()" class="profile-credit-cards">
+        <table class="credit-cards" *ngFor="let card of getCards(); let i = index;">
             <caption class="caption" *ngIf="i === 0">Credit Cards</caption>
             <tr>
                 <th>Card id</th>
@@ -40,5 +44,9 @@
             <th> {{ card.type }} </th>
             <th> {{ card.isActive ? "Yes" : "No" }} </th>
         </table>
+    </div>
+
+    <div *ngIf="displayCategory === 'creditCards' && creditCardsAreEmpty()" class="no-credit-cards-container">
+        <p class="no-credit-cardstext">No credit cards are available</p>
     </div>
 </div>

@@ -22,4 +22,8 @@ export class LoginComponent {
     
     await this.router.navigate(["/home"]);
   }
+
+  public async back() {
+    await this.router.navigate(["/.."]);
+  }
 }

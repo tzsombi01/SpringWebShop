@@ -1,5 +1,6 @@
 <div class="register-header">
-    <p class="title">Register</p>
+    <div class="back-button-container"> <button class="back-button" (click)="back()">Back</button> </div>
+    <div class="title-container"> <p class="title">Register</p> </div>
 </div>
 
 <form #register="ngForm" class="register-form" (ngSubmit)="submit(register, firstName, lastName, email, password)">
@@ -26,7 +27,7 @@
     <label class="field-name">Password:</label>
     <div class="password-hide">
         <input #password="ngModel" required minlength="5" placeholder="Password" type="text" [type]="hide ? 'password' : 'text'" name="password" ngModel>
-        <button class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
+        <button type="button" class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
     </div>
     <div *ngIf="password.touched && password.invalid" class="alert">
         <p *ngIf="password.errors?.['required']">Last Name is required</p>

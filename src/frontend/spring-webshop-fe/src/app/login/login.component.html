@@ -1,5 +1,6 @@
 <div class="login-header">
-    <p class="title">Login</p>
+    <div class="back-button-container"> <button class="back-button" (click)="back()">Back</button> </div>
+    <div class="title-container"> <p class="title">Login</p> </div>
 </div>
 
 <div class="login-form">
@@ -9,7 +10,7 @@
     <p class="field-name">Password:</p>
     <div class="password-hide">
         <input #passwordField placeholder="Password" type="text" [formControl]="passwordControl" [type]="hide ? 'password' : 'text'">
-        <button class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
+        <button type="button" class="hide-button" (click)="hide = !hide">{{ hide ? 'Hide' : 'Show' }}</button>
     </div>
 
     <button class="submit-button" (click)="login()">Submit login</button>

@@ -36,6 +36,7 @@
             <th> {{ card.id }} </th>
             <th> {{ card.cardNumber }} </th>
             <th> {{ card.expiryDate | date: "MMM, y" }}</th>
+            <th> {{ card.fullName }} </th>
             <th> {{ card.type }} </th>
             <th> {{ card.isActive ? "Yes" : "No" }} </th>
         </table>

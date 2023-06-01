@@ -1,4 +1,4 @@
-<div class="product-container">
+<div *ngIf="! isProductsEmpty()" class="product-container">
     <table class="product-table" *ngFor="let product of getProducts(); let i = index;">
         <caption *ngIf="i == 0" id="products-caption">Products of our webshop:</caption>
         <tr>
@@ -14,4 +14,8 @@
         <th> {{ product.description ?? "Description was not provided"}} </th>
         <th> {{ product.sellerId }} </th>
     </table>
+</div>
+
+<div *ngIf="isProductsEmpty()" class="no-products-container">
+    <p class="no-products-text">No products found!</p>
 </div>

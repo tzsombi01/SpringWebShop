@@ -20,6 +20,10 @@ export class ProductsComponent implements OnInit {
     return this.productService.getProducts();
   }
 
+  public isProductsEmpty(): boolean {
+    return this.productService.getProducts().length === 0;
+  }
+
   private getAllProducts(): void {
     this.productService.getAllProducts().subscribe(
       (response: ProductWrapper) => {

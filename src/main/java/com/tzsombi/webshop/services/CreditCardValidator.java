@@ -25,7 +25,7 @@ public class CreditCardValidator {
             sum += digit;
         }
 
-        if (! (sum % 10 == 0)) {
+        if (sum % 10 != 0) {
             throw new CardNumberInvalidException(ErrorConstants.CARD_NUMBER_INVALID);
         }
 

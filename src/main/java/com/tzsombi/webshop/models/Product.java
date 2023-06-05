@@ -7,9 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -51,12 +49,12 @@ public abstract class Product {
             name = "user_product",
             joinColumns = {
                     @JoinColumn(
-                            name = "user_id",
+                            name = "product_id",
                             referencedColumnName = "id")
             },
             inverseJoinColumns = {
                     @JoinColumn(
-                            name = "product_id",
+                            name = "user_id",
                             referencedColumnName = "id"
                     )
             }

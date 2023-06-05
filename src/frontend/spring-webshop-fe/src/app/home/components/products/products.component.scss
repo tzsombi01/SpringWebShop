@@ -6,6 +6,12 @@
     .product-table {
         border: 8px solid;
         border-style: groove;
+
+        .buy-button {
+            font-size: 23px;
+            background-color: coral;
+            border-radius: 20%;
+        }
     }
 
     #products-caption {

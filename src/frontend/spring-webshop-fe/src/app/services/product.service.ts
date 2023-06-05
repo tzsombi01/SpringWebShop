@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductWrapper } from '../interfaces/productResponse';
 import { Product } from '../interfaces/product';
 import { environment } from 'src/environments/environment';
+import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +14,14 @@ export class ProductService {
 
   private readonly BASE_URL: string = environment.BASE_URL;
   private readonly urlToAllProductsEndp: string;
+  private readonly urlToBuyProductEndp: string;
 
   products: Product[];
   productsChanged: EventEmitter<Product[]> = new EventEmitter<Product[]>();
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private userService: UserService, private authService: AuthService) { 
     this.urlToAllProductsEndp = "/api/v1/products";
+    this.urlToBuyProductEndp = "/api/v1/products/buy";
     this.products = [];
   }
 
@@ -40,4 +44,28 @@ export class ProductService {
 
     return products;
   }
+
+  public buyProduct(product: Product): boolean {
+    if (! this.userService.isUserLoggedIn()) {
+      alert("You must be logged in to buy a product!");
+      return false;
+    }
+
+    let authHeader = new HttpHeaders({ Authorization: "Bearer " + this.authService.getToken() });
+    const requestHeaders = { headers: authHeader };
+    let buy: Observable<null> = this.http.post<null>(
+      `${ this.BASE_URL + this.urlToBuyProductEndp }/${ product.id }?userId=${ this.userService.getUserId() }`,
+      null,
+      requestHeaders
+    );
+
+    buy.subscribe(
+      () => alert("Successful Purchase"),
+      (error: any) => console.error(error),
+      () => console.log("Successful Purchase")
+    );
+
+    return true;
+  }
+  
 }

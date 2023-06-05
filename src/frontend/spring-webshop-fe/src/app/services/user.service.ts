@@ -42,8 +42,8 @@ export class UserService {
   }
 
   private getMeUserData(token: string): Observable<IUser> {
-    let customHeaders = new HttpHeaders({ Authorization: "Bearer " + token});
-    const requestHeaders = { headers: customHeaders };
+    let authHeader = new HttpHeaders({ Authorization: "Bearer " + token });
+    const requestHeaders = { headers: authHeader };
     return this.http.get<IUser>(this.BASE_URL + this.urlToMeEndpoint, requestHeaders);
   }
 
@@ -72,6 +72,10 @@ export class UserService {
 
   private getUser(): Observable<IUser> {
     return this.http.get<IUser>(this.BASE_URL + this.urlToDemoEndpoint);
+  }
+
+  public getUserId(): number {
+    return this.user.id;
   }
 
   public getUserName(): string {

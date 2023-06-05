@@ -51,8 +51,8 @@ public class ProductController {
     }
 
     @PostMapping("/buy/{productId}")
-    public ResponseEntity<String> buyProduct(@PathVariable Long productId, @RequestParam Long userId) {
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void buyProduct(@PathVariable Long productId, @RequestParam Long userId) {
         productService.buyProduct(productId, userId);
-        return new ResponseEntity<>("Purchase was successful!", HttpStatus.ACCEPTED);
     }
 }

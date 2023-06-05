@@ -34,5 +34,13 @@ export class ProductsComponent implements OnInit {
       () => console.log("Products retrieved")
     );
   }
+  
+  public trackById(index: number, product: Product): number {
+    return product.id;
+  }
+
+  public buy(product: Product): void {
+    this.productService.buyProduct(product);
+  }
 }
 

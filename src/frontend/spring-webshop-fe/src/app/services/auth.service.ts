@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { TokenResponse } from '../interfaces/tokenResponse';
 import { Observable } from 'rxjs/internal/Observable';
 import { UserService } from './user.service';

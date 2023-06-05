@@ -1,5 +1,5 @@
 <div *ngIf="! isProductsEmpty()" class="product-container">
-    <table class="product-table" *ngFor="let product of getProducts(); let i = index;">
+    <table class="product-table" *ngFor="let product of getProducts(); trackBy: trackById; let i = index;">
         <caption *ngIf="i == 0" id="products-caption">Products of our webshop:</caption>
         <tr>
             <th>Product id</th>
@@ -13,6 +13,7 @@
         <th> {{ product.price | currency: "USD" }} </th>
         <th> {{ product.description ?? "Description was not provided"}} </th>
         <th> {{ product.sellerId }} </th>
+        <button class="buy-button" (click)="buy(product)">Buy</button>
     </table>
 </div>
 
